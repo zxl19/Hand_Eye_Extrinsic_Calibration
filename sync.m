@@ -14,7 +14,7 @@ for i = 1 : m
         data_2_sync(index, :) = data_2(last_index + ind - 1, :);
         timestamp_1_sync(index, 1) = timestamp_1(i);
         timestamp_2_sync(index, 1) = timestamp_2(last_index + ind - 1);
-        fprintf('%f, %f \n',timestamp_1(i), timestamp_2(last_index + ind - 1))
+        fprintf('%f\t%f \n',timestamp_1(i), timestamp_2(last_index + ind - 1))
         index = index + 1;
         last_index = last_index + ind;
     else

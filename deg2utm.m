@@ -35,13 +35,13 @@ function  [x,y,utmzone] = deg2utm(Lat,Lon)
 %    Lon=dms2deg(mat2dms(LonDMS)); %convert into degrees
 %    [x,y,utmzone] = deg2utm(Lat,Lon)
 %
-% Author:
+% Author: 
 %   Rafael Palacios
 %   Universidad Pontificia Comillas
 %   Madrid, Spain
 % Version: Apr/06, Jun/06, Aug/06, Aug/06
-% Aug/06: fixed a problem (found by Rodolphe Dewarrat) related to southern
-%    hemisphere coordinates.
+% Aug/06: fixed a problem (found by Rodolphe Dewarrat) related to southern 
+%    hemisphere coordinates. 
 % Aug/06: corrected m-Lint warnings
 %-------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ for i=1:n1
    lo=Lon(i);
 
    sa = 6378137.000000 ; sb = 6356752.314245;
-
+         
    %e = ( ( ( sa ^ 2 ) - ( sb ^ 2 ) ) ^ 0.5 ) / sa;
    e2 = ( ( ( sa ^ 2 ) - ( sb ^ 2 ) ) ^ 0.5 ) / sb;
    e2cuadrada = e2 ^ 2;
