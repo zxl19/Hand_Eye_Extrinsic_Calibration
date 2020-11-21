@@ -1,8 +1,6 @@
 function loss = costFunction(pose_1, pose_2, x0)
 mu = [1, 1, 1e6, 1e6]; % weight
-% initialGuess = eul2tform(x0(1, 4 : 6), 'ZYX');
-% initialGuess(1 : 3, 4) = x0(1, 1 : 3)';
-R = eul2rotm(x0(1, 4 : 6), 'ZYX');
+R = eul2rotm(x0(1, 4 : 6), 'XYZ');
 t = x0(1, 1 : 3)';
 loss = 0;
 [n, ~] = size(pose_1);

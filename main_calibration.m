@@ -2,6 +2,15 @@ close all
 clear
 clc
 format long
+%% Abstract
+% LiDAR Coordinate in A-LOAM:
+% x (back)
+% y (right)
+% z (up)
+% GPS/IMU Coordinate
+% x (right)
+% y (front)
+% z (up)
 %% Parameter Setup
 filename_1 = "pose1.csv"; % LiDAR Odometry
 filename_2 = "pose2.csv"; % GPS/IMU
@@ -17,7 +26,7 @@ altitude = T_2{:, 35};
 roll = deg2rad(T_2{:, 45}); % rad
 pitch = deg2rad(T_2{:, 47}); % rad
 azimuth = deg2rad(T_2{:, 49}); % rad
-pose_2 = [latitude, longitude, altitude, roll, pitch, azimuth]; % latitude longitude altitude row pitch azimuth
+pose_2 = [latitude, longitude, altitude, roll, pitch, -azimuth]; % latitude longitude altitude row pitch azimuth
 %% Synchronize Data or Pose Interpolation (TODO)
 threshold = 0.005;
 [pose_1_sync, timestamp_1_sync, pose_2_sync, timestamp_2_sync] = sync(pose_1, timestamp_1, pose_2, timestamp_2, threshold);
@@ -27,7 +36,7 @@ pose_1_sync(:, 1 : 3) = pose_1_sync(:, 1 : 3) - pose_1_sync(1, 1 : 3);
 R0 = quat2rotm(pose_1_sync(1, [end, end - 3 : end - 1])); % qw qx qy qz
 for i = 1 : m
     R = R0 \ quat2rotm(pose_1_sync(i, [end, end - 3 : end - 1])); % qw qx qy qz
-    eul = rotm2eul(R, 'ZYX'); % rad
+    eul = rotm2eul(R, 'XYZ'); % rad
     pose_1_sync(i, 4 : 6) = eul; % XYZ
 end
 pose_1_sync(:, 7) = [];
@@ -36,10 +45,10 @@ pose_2_sync(:, 1) = X;
 pose_2_sync(:, 2) = Y;
 pose_2_sync(:, 1 : 3) = pose_2_sync(:, 1 : 3) - pose_2_sync(1, 1 : 3);
 [n, ~] = size(pose_2_sync);
-R0 = eul2rotm(pose_2_sync(1, end - 2 : end), 'ZYX'); % XYZ
+R0 = eul2rotm(pose_2_sync(1, end - 2 : end), 'XYZ'); % XYZ
 for i = 1 : n
-    R = R0 \ eul2rotm(pose_2_sync(i, end - 2 : end), 'ZYX');
-    eul = rotm2eul(R, 'ZYX');
+    R = R0 \ eul2rotm(pose_2_sync(i, end - 2 : end), 'XYZ');
+    eul = rotm2eul(R, 'XYZ');
     pose_2_sync(i, end - 2 : end) = eul; % XYZ
 end
 %% Plot to Check Data
@@ -75,25 +84,27 @@ title('Trajectories')
 legend('LiDAR      Roll', 'LiDAR      Pitch', 'GPS/IMU Roll', 'GPS/IMU Pitch', 'LiDAR      Yaw', 'GPS/IMU Yaw', 'Location', 'SouthWest')
 %% Optimization
 fun = @(x)costFunction(pose_1_sync, pose_2_sync, x);
-x0 = [0, 0, 0, 0, 0, -pi/2]; % Initial Value
+x0 = [0, 0, -0.15, 0, 0, -pi/2]; % Initial Value: x y z roll pitch yaw
 % options = optimset('Display', 'iter', 'FunValCheck', 'on', 'MaxFunEvals', 1e6, 'TolFun', 1e-6, 'TolX', 1e-6);
+% [x,fval,exitflag,output] = fminsearch(fun, x0, options);
 options = optimset('Display', 'iter', 'FunValCheck', 'on');
 % [x,fval,exitflag,output] = fminsearch(fun, x0, options);
 [x,fval,exitflag,output] = fminunc(fun, x0, options);
+fprintf("LiDAR -> GPS/IMU Extrinsic: X (m) \t\tY (m) \t\tZ (m) \t\tRoll (rad) \t\tPitch (rad) \t\tYaw (rad)\n")
 fprintf("LiDAR -> GPS/IMU Extrinsic: %f\t%f\t%f\t%f\t%f\t%f\n", x)
 %% Transform
-R12 = eul2rotm(x(1, 4 : 6), 'ZYX');
+R12 = eul2rotm(x(1, 4 : 6), 'XYZ');
 t12 = x(1, 1 : 3);
-T12 = eul2tform(x(1, 4 : 6), 'ZYX');
+T12 = eul2tform(x(1, 4 : 6), 'XYZ');
 T12(1 : 3, 4) = x(1, 1 : 3)';
 [m, ~] = size(pose_1_sync);
 pose_L2I = zeros(m, 6);
 for i = 1 : m
-    pose_1_temp = eul2tform(pose_1_sync(i, 4 : 6), 'ZYX');
+    pose_1_temp = eul2tform(pose_1_sync(i, 4 : 6), 'XYZ');
     pose_1_temp(1 : 3, 4) = pose_1_sync(i, 1 : 3)';
     pose_L2I_temp = T12 \ pose_1_temp * T12;
 %     pose_L2I_temp = pose_1_temp * T12; % Not Working
-    pose_L2I(i, :) = [pose_L2I_temp(1 : 3, 4)', tform2eul(pose_L2I_temp, 'ZYX')];
+    pose_L2I(i, :) = [pose_L2I_temp(1 : 3, 4)', tform2eul(pose_L2I_temp, 'XYZ')];
 end
 %% Plot to Check Data
 figure
@@ -104,3 +115,6 @@ plot3(pose_1_sync(:, 1), pose_1_sync(:, 2), pose_1_sync(:, 3), 'k^-.', 'LineWidt
 plot3(pose_L2I(:, 1), pose_L2I(:, 2), pose_L2I(:, 3), 'bo-', 'LineWidth', 2)
 plot3(pose_2_sync(:, 1), pose_2_sync(:, 2), pose_2_sync(:, 3), 'rs-', 'LineWidth', 2)
 legend('LiDAR Pose Original', 'LiDAR Pose Transformed', 'GPS/IMU', 'Location', 'NorthEast')
+xlabel('X / m')
+ylabel('Y / m')
+zlabel('Z / m')
