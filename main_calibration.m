@@ -11,7 +11,7 @@ format long
 % x (right)
 % y (front)
 % z (up)
-%% Parameter Setup
+%% Pose Filename Setup
 filename_1 = "pose1.csv"; % LiDAR Odometry
 filename_2 = "pose2.csv"; % GPS/IMU
 %% Read LiDAR Odometry and GPS/IMU Data
@@ -26,10 +26,11 @@ altitude = T_2{:, 35};
 roll = deg2rad(T_2{:, 45}); % rad
 pitch = deg2rad(T_2{:, 47}); % rad
 azimuth = deg2rad(T_2{:, 49}); % rad
-pose_2 = [latitude, longitude, altitude, roll, pitch, -azimuth]; % latitude longitude altitude row pitch azimuth
-%% Synchronize Data or Pose Interpolation (TODO)
-threshold = 0.005;
-[pose_1_sync, timestamp_1_sync, pose_2_sync, timestamp_2_sync] = sync(pose_1, timestamp_1, pose_2, timestamp_2, threshold);
+pose_2 = [latitude, longitude, altitude, roll, pitch, azimuth]; % latitude longitude altitude row pitch azimuth
+%% Data Synchronization or Pose Interpolation (TODO)
+threshold = 0.002;
+flag = true; % Print Synchronized Timestamp
+[pose_1_sync, timestamp_1_sync, pose_2_sync, timestamp_2_sync] = sync(pose_1, timestamp_1, pose_2, timestamp_2, threshold, flag);
 %% Coordinate Transformation
 pose_1_sync(:, 1 : 3) = pose_1_sync(:, 1 : 3) - pose_1_sync(1, 1 : 3);
 [m, ~] = size(pose_1_sync);
@@ -83,15 +84,24 @@ ylabel('Euler Angle / rad')
 title('Trajectories')
 legend('LiDAR      Roll', 'LiDAR      Pitch', 'GPS/IMU Roll', 'GPS/IMU Pitch', 'LiDAR      Yaw', 'GPS/IMU Yaw', 'Location', 'SouthWest')
 %% Optimization
+mode = ''; % Constrained/Unconstrained/Search
 fun = @(x)costFunction(pose_1_sync, pose_2_sync, x);
-x0 = [0, 0, -0.15, 0, 0, -pi/2]; % Initial Value: x y z roll pitch yaw
+% x0 = [0, 0, -0.15, 0, 0, -pi/2]; % Initial Value: x y z (m) roll pitch yaw (rad)
 % options = optimset('Display', 'iter', 'FunValCheck', 'on', 'MaxFunEvals', 1e6, 'TolFun', 1e-6, 'TolX', 1e-6);
-% [x,fval,exitflag,output] = fminsearch(fun, x0, options);
 options = optimset('Display', 'iter', 'FunValCheck', 'on');
-% [x,fval,exitflag,output] = fminsearch(fun, x0, options);
-[x,fval,exitflag,output] = fminunc(fun, x0, options);
-fprintf("LiDAR -> GPS/IMU Extrinsic: X (m) \t\tY (m) \t\tZ (m) \t\tRoll (rad) \t\tPitch (rad) \t\tYaw (rad)\n")
-fprintf("LiDAR -> GPS/IMU Extrinsic: %f\t%f\t%f\t%f\t%f\t%f\n", x)
+% [x,fval,exitflag,output] = fminsearch(fun, x0, options); % Search
+% [x,fval,exitflag,output] = fminunc(fun, x0, options); % Unconstrained
+% Constrained
+A = [];
+b = [];
+Aeq = [];
+beq = [];
+lb = [-1, -1, -1, -pi, -pi, -pi];
+ub = [1, 1, 1, pi, pi, pi];
+x0 = (lb + ub)/2;
+[x,fval,exitflag,output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub); % Constrained
+fprintf("LiDAR -> GPS/IMU Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tRoll\t|\tPitch\t|\tYaw\t\t|\n")
+fprintf("LiDAR -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x)
 %% Transform
 R12 = eul2rotm(x(1, 4 : 6), 'XYZ');
 t12 = x(1, 1 : 3);
@@ -102,8 +112,8 @@ pose_L2I = zeros(m, 6);
 for i = 1 : m
     pose_1_temp = eul2tform(pose_1_sync(i, 4 : 6), 'XYZ');
     pose_1_temp(1 : 3, 4) = pose_1_sync(i, 1 : 3)';
-    pose_L2I_temp = T12 \ pose_1_temp * T12;
-%     pose_L2I_temp = pose_1_temp * T12; % Not Working
+    pose_L2I_temp = T12 \ pose_1_temp * T12; % Correct
+%     pose_L2I_temp = pose_1_temp * T12; % Wrong
     pose_L2I(i, :) = [pose_L2I_temp(1 : 3, 4)', tform2eul(pose_L2I_temp, 'XYZ')];
 end
 %% Plot to Check Data
