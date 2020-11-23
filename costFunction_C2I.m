@@ -8,9 +8,9 @@ loss = 0;
 for i = 2 : n
     [R_1, t_1] = calcRelativePose(pose_1(i - 1, :), pose_1(i, :));
     [R_2, t_2] = calcRelativePose(pose_2(i - 1, :), pose_2(i, :));
-    loss = loss + mu(1) * norm(R_1 * R - R * R_2, 2); % + ...
-        % mu(2) * norm(R_1 * t + t_1 * s - R * t_2 - t, 2); % + ...
-        % 1e5 * norm(x0(1, 1 : 3) - [0.3, 0.11, -0.85], 1);
+    loss = loss + mu(1) * norm(R_1 * R - R * R_2, 2) + ...
+        mu(2) * norm(R_1 * t + t_1 * s - R * t_2 - t, 2);
+%     loss = loss + mu(1) * norm(R_1 * R - R * R_2, 2);
 end
-loss = loss + mu(3) * norm(R * R' - eye(3), 2) + mu(4) * norm(R * R' - eye(3), 2);
+% loss = loss + mu(3) * norm(R * R' - eye(3), 2) + mu(4) * norm(R * R' - eye(3), 2);
 end

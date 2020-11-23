@@ -39,11 +39,12 @@ threshold = 0.002;
 flag = true; % Print Synchronized Timestamp
 [pose_1_sync, timestamp_1_sync, pose_2_sync, timestamp_2_sync] = sync(pose_1, timestamp_1, pose_2, timestamp_2, threshold, flag);
 %% Coordinate Transformation
-R0 = quat2rotm(pose_1_sync(1, 4 : 7)); % qw qx qy qz
-pose_1_sync(:, 1 : 3) = inv(R0) * (pose_1_sync(:, 1 : 3) - pose_1_sync(1, 1 : 3));
+R0_1 = quat2rotm(pose_1_sync(1, 4 : 7)); % qw qx qy qz
+t0_1 = pose_1_sync(1, 1 : 3);
 [m, ~] = size(pose_1_sync);
 for i = 1 : m
-    R = R0 \ quat2rotm(pose_1_sync(i, 4 : 7)); % qw qx qy qz
+    pose_1_sync(i, 1 : 3) = R0_1 \ (pose_1_sync(i, 1 : 3)' - t0_1');
+    R = R0_1 \ quat2rotm(pose_1_sync(i, 4 : 7)); % qw qx qy qz
     eul = rotm2eul(R, 'ZYX'); % rad
     pose_1_sync(i, 4 : 6) = eul; % ZYX
 end
@@ -51,11 +52,12 @@ pose_1_sync(:, 7) = [];
 [X, Y, ~] = deg2utm(pose_2_sync(:, 1), pose_2_sync(:, 2));
 pose_2_sync(:, 1) = X;
 pose_2_sync(:, 2) = Y;
-R0 = eul2rotm(pose_2_sync(1, end - 2 : end), 'ZYX'); % ZYX
-pose_2_sync(:, 1 : 3) = inv(R0) * (pose_2_sync(:, 1 : 3) - pose_2_sync(1, 1 : 3));
+R0_2 = eul2rotm(pose_2_sync(1, end - 2 : end), 'ZYX'); % ZYX
+t0_2 = pose_2_sync(1, 1 : 3);
 [n, ~] = size(pose_2_sync);
 for i = 1 : n
-    R = R0 \ eul2rotm(pose_2_sync(i, end - 2 : end), 'ZYX');
+    pose_2_sync(i, 1 : 3) = R0_2 \ (pose_2_sync(i, 1 : 3)' - t0_2');
+    R = R0_2 \ eul2rotm(pose_2_sync(i, end - 2 : end), 'ZYX');
     eul = rotm2eul(R, 'ZYX');
     pose_2_sync(i, end - 2 : end) = eul; % XYZ
 end
@@ -91,7 +93,7 @@ ylabel('Euler Angle / rad')
 title('Trajectories')
 legend('Camera     Roll', 'Camera     Pitch', 'GPS/IMU Roll', 'GPS/IMU Pitch', 'Camera     Yaw', 'GPS/IMU Yaw', 'Location', 'SouthWest')
 %% Optimization
-mode = ''; % Constrained/Unconstrained/Search
+mode = ''; % Constrained/Unconstrained/Search (TODO)
 fun = @(x)costFunction_C2I(pose_1_sync, pose_2_sync, x);
 % x0 = [0, 0, -0.15, 0, 0, -pi/2]; % Initial Value: x y z (m) roll pitch yaw (rad)
 % options = optimset('Display', 'iter', 'FunValCheck', 'on', 'MaxFunEvals', 1e6, 'TolFun', 1e-6, 'TolX', 1e-6);
@@ -104,6 +106,7 @@ beq = [];
 lb = [-1, -1, -1, -pi, -pi, -pi, 0];
 ub = [1, 1, 1, pi, pi, pi, 20];
 x0 = (lb + ub) / 2;
+% x0 = [0.3, 0.11, -0.85, 0, 0, pi / 2, 10];
 [x,fval,exitflag,output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub); % Constrained
 % [x,fval,exitflag,output] = fminsearch(fun, x0, options); % Search
 % [x,fval,exitflag,output] = fminunc(fun, x0, options); % Unconstrained
@@ -112,10 +115,10 @@ fprintf("Camera -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4
 %% Transform
 % R12 = eul2rotm(x(1, 4 : 6), 'ZYX');
 % t12 = x(1, 1 : 3);
+% x = [0.3, 0.11, -0.85, 0, 0, pi / 2, 10];
 scale = x(1, 7);
 T12 = eul2tform(x(1, 4 : 6), 'ZYX');
 T12(1 : 3, 4) = x(1, 1 : 3)';
-% T12(1 : 3, 4) = [0.3, 0.11, -0.85]';
 fprintf("T12 = \n")
 disp(T12)
 fprintf("T12^-1 = \n")
