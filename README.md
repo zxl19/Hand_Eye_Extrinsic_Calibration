@@ -1,6 +1,10 @@
 # Hand_Eye_Extrinsic_Calibration
 
+**This repository is currently in progress.**
+
 MATLAB code for LiDAR-GPS/IMU and Camera-GPS/IMU extrinsic calibration based on hand-eye calibration method.
+
+The extrinsic can be obtained by optimizing `x y z yaw pitch roll` or `x y z qw qx qy qz`. We recommend using quaternions to represent rotation.
 
 ## LiDAR to GPS/IMU
 
@@ -33,12 +37,12 @@ MATLAB code for LiDAR-GPS/IMU and Camera-GPS/IMU extrinsic calibration based on 
 1. Change filenames of `.csv` files.
 
     ```matlab
-    %% Parameter Setup
+    %% Pose Filename Setup
     filename_1 = "pose1.csv"; % LiDAR Odometry
     filename_2 = "pose2.csv"; % GPS/IMU
     ```
 
-2. Run `main_calibration_L2I.m`
+2. Run `main_calibration_L2I_quat.m`
 
 ## Camera to GPS/IMU
 
@@ -51,12 +55,12 @@ MATLAB code for LiDAR-GPS/IMU and Camera-GPS/IMU extrinsic calibration based on 
 1. Change filenames of `.csv` files.
 
     ```matlab
-    %% Parameter Setup
+    %% Pose Filename Setup
     filename_1 = "pose1.csv"; % Visual Odometry
     filename_2 = "pose2.csv"; % GPS/IMU
     ```
 
-2. Run `main_calibration_C2I.m`
+2. Run `main_calibration_C2I_quat.m`
 
 ## Reference
 
