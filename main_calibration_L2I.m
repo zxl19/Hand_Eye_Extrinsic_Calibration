@@ -36,12 +36,12 @@ threshold = 0.005;
 flag = true; % Print Synchronized Timestamp
 [pose_1_sync, timestamp_1_sync, pose_2_sync, timestamp_2_sync] = sync(pose_1, timestamp_1, pose_2, timestamp_2, threshold, flag);
 %% Coordinate Transformation
-R0_1 = quat2rotm(pose_1_sync(1, [end, end - 3 : end - 1])); % qw qx qy qz
+R0_1 = quat2rotm(pose_1_sync(1, [7, 4 : 6])); % qw qx qy qz
 t0_1 = pose_1_sync(1, 1 : 3);
 [m, ~] = size(pose_1_sync);
 for i = 1 : m
     pose_1_sync(i, 1 : 3) = R0_1 \ (pose_1_sync(i, 1 : 3)' - t0_1');
-    R = R0_1 \ quat2rotm(pose_1_sync(i, [end, end - 3 : end - 1])); % qw qx qy qz
+    R = R0_1 \ quat2rotm(pose_1_sync(i, [7, 4 : 6])); % qw qx qy qz
     eul = rotm2eul(R, 'ZYX'); % rad
     pose_1_sync(i, 4 : 6) = eul; % ZYX
 end
@@ -49,15 +49,14 @@ pose_1_sync(:, 7) = [];
 [X, Y, ~] = deg2utm(pose_2_sync(:, 1), pose_2_sync(:, 2));
 pose_2_sync(:, 1) = X;
 pose_2_sync(:, 2) = Y;
-pose_2_sync(:, 1 : 3) = pose_2_sync(:, 1 : 3) - pose_2_sync(1, 1 : 3);
-R0_2 = eul2rotm(pose_2_sync(1, end - 2 : end), 'ZYX'); % ZYX
+R0_2 = eul2rotm(pose_2_sync(1, 4 : 6), 'ZYX'); % ZYX
 t0_2 = pose_2_sync(1, 1 : 3);
 [n, ~] = size(pose_2_sync);
 for i = 1 : n
     pose_2_sync(i, 1 : 3) = R0_2 \ (pose_2_sync(i, 1 : 3)' - t0_2');
-    R = R0_2 \ eul2rotm(pose_2_sync(i, end - 2 : end), 'ZYX');
-    eul = rotm2eul(R, 'ZYX');
-    pose_2_sync(i, end - 2 : end) = eul; % ZYX
+    R = R0_2 \ eul2rotm(pose_2_sync(i, 4 : 6), 'ZYX');
+    eul = rotm2eul(R, 'ZYX'); % rad
+    pose_2_sync(i, 4 : 6) = eul; % ZYX
 end
 %% Plot to Check Data
 figure
@@ -106,7 +105,7 @@ beq = [];
 lb = [-1, -1, -1, -pi, -pi, -pi];
 ub = [1, 1, 1, pi, pi, pi];
 x0 = (lb + ub)/2;
-% x0(1 : 3) = [0.5, 0.5, 0.5]; % Initial Value: x y z (m) yaw pitch roll (rad)
+% x0 = [0.35, 0, -0.13, pi / 2, 0, 0]; % Measurement
 [x,fval,exitflag,output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub); % Constrained
 fprintf("LiDAR -> GPS/IMU Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tYaw\t\t|\tPitch\t|\tRoll\t|\n")
 fprintf("LiDAR -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x)
@@ -117,6 +116,8 @@ T12 = eul2tform(x(1, 4 : 6), 'ZYX');
 T12(1 : 3, 4) = x(1, 1 : 3)';
 fprintf("T12 = \n")
 disp(T12)
+fprintf("T12^-1 = \n")
+disp(inv(T12))
 [m, ~] = size(pose_1_sync);
 pose_L2I = zeros(m, 6);
 for i = 1 : m

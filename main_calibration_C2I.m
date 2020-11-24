@@ -25,7 +25,6 @@ T_2 = readtable(filename_2);
 T_3 = readtable(filename_3);
 timestamp_1 = T_1{:, 1}; % s
 timestamp_2 = T_3{:, 3} + T_3{:, 4} * 1e-9; % s
-% pose_1 = [T_1{:, 6 : 8}, T_1{:, 2 : 5}]; % x y z qw qx qy qz
 pose_1 = T_1{:, 2 : 8}; % x y z qw qx qy qz
 latitude = T_2{:, 31};
 longitude = T_2{:, 33};
@@ -35,7 +34,7 @@ pitch = deg2rad(T_2{:, 47}); % rad
 azimuth = deg2rad(T_2{:, 49}); % rad
 pose_2 = [latitude, longitude, altitude, -azimuth, pitch, roll]; % latitude longitude altitude yaw pitch roll
 %% Data Synchronization or Pose Interpolation (TODO)
-threshold = 0.002;
+threshold = 0.005;
 flag = true; % Print Synchronized Timestamp
 [pose_1_sync, timestamp_1_sync, pose_2_sync, timestamp_2_sync] = sync(pose_1, timestamp_1, pose_2, timestamp_2, threshold, flag);
 %% Coordinate Transformation
@@ -52,14 +51,14 @@ pose_1_sync(:, 7) = [];
 [X, Y, ~] = deg2utm(pose_2_sync(:, 1), pose_2_sync(:, 2));
 pose_2_sync(:, 1) = X;
 pose_2_sync(:, 2) = Y;
-R0_2 = eul2rotm(pose_2_sync(1, end - 2 : end), 'ZYX'); % ZYX
+R0_2 = eul2rotm(pose_2_sync(1, 4 : 6), 'ZYX'); % ZYX
 t0_2 = pose_2_sync(1, 1 : 3);
 [n, ~] = size(pose_2_sync);
 for i = 1 : n
     pose_2_sync(i, 1 : 3) = R0_2 \ (pose_2_sync(i, 1 : 3)' - t0_2');
-    R = R0_2 \ eul2rotm(pose_2_sync(i, end - 2 : end), 'ZYX');
-    eul = rotm2eul(R, 'ZYX');
-    pose_2_sync(i, end - 2 : end) = eul; % XYZ
+    R = R0_2 \ eul2rotm(pose_2_sync(i, 4 : 6), 'ZYX');
+    eul = rotm2eul(R, 'ZYX'); % rad
+    pose_2_sync(i, 4 : 6) = eul; % ZYX
 end
 %% Plot to Check Data
 figure
@@ -104,9 +103,9 @@ b = [];
 Aeq = [];
 beq = [];
 lb = [-1, -1, -1, -pi, -pi, -pi, 0];
-ub = [1, 1, 1, pi, pi, pi, 20];
+ub = [1, 1, 1, pi, pi, pi, 10];
 x0 = (lb + ub) / 2;
-% x0 = [0.3, 0.11, -0.85, 0, 0, pi / 2, 10];
+% x0 = [0.3, 0.11, -0.85, 0, 0, pi / 2, 3]; % Measurement
 [x,fval,exitflag,output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub); % Constrained
 % [x,fval,exitflag,output] = fminsearch(fun, x0, options); % Search
 % [x,fval,exitflag,output] = fminunc(fun, x0, options); % Unconstrained
@@ -115,7 +114,6 @@ fprintf("Camera -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4
 %% Transform
 % R12 = eul2rotm(x(1, 4 : 6), 'ZYX');
 % t12 = x(1, 1 : 3);
-% x = [0.3, 0.11, -0.85, 0, 0, pi / 2, 10];
 scale = x(1, 7);
 T12 = eul2tform(x(1, 4 : 6), 'ZYX');
 T12(1 : 3, 4) = x(1, 1 : 3)';
