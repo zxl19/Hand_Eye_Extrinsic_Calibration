@@ -92,11 +92,9 @@ ylabel('Euler Angle / rad')
 title('Trajectories')
 legend('Camera     Roll', 'Camera     Pitch', 'GPS/IMU Roll', 'GPS/IMU Pitch', 'Camera     Yaw', 'GPS/IMU Yaw', 'Location', 'SouthWest')
 %% Optimization
-mode = ''; % Constrained/Unconstrained/Search (TODO)
 fun = @(x)costFunction_C2I(pose_1_sync, pose_2_sync, x);
-% x0 = [0, 0, -0.15, 0, 0, -pi/2]; % Initial Value: x y z (m) roll pitch yaw (rad)
 % options = optimset('Display', 'iter', 'FunValCheck', 'on', 'MaxFunEvals', 1e6, 'TolFun', 1e-6, 'TolX', 1e-6);
-options = optimset('Display', 'iter', 'FunValCheck', 'on');
+% options = optimset('Display', 'iter', 'FunValCheck', 'on');
 % Constrained
 A = [];
 b = [];
@@ -105,7 +103,7 @@ beq = [];
 lb = [-1, -1, -1, -pi, -pi, -pi, 0];
 ub = [1, 1, 1, pi, pi, pi, 10];
 x0 = (lb + ub) / 2;
-% x0 = [0.3, 0.11, -0.85, 0, 0, pi / 2, 3]; % Measurement
+% x0 = [0.3, 0.11, -0.85, 0, 0, pi / 2, 3]; % Measurement: x y z (m) roll pitch yaw (rad)
 [x,fval,exitflag,output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub); % Constrained
 % [x,fval,exitflag,output] = fminsearch(fun, x0, options); % Search
 % [x,fval,exitflag,output] = fminunc(fun, x0, options); % Unconstrained
