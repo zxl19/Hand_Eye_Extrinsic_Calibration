@@ -4,7 +4,7 @@
 
 MATLAB code for LiDAR-GPS/IMU and Camera-GPS/IMU extrinsic calibration based on hand-eye calibration method.
 
-The extrinsic can be obtained by optimizing `x y z yaw pitch roll` or `x y z qw qx qy qz`. We recommend using quaternions to represent rotation.
+The rotation part of the extrinsic can be represented by euler angles, quaternions or 9 elements of the rotation matrix. We have implemented those 3 representations respectively by optimizing `x y z yaw pitch roll` or `x y z qw qx qy qz` or `x y z r_11 r_12 r_13 r_21 r_22 r_23 r_31 r_32 r_33`.
 
 ## LiDAR to GPS/IMU
 
@@ -42,7 +42,7 @@ The extrinsic can be obtained by optimizing `x y z yaw pitch roll` or `x y z qw 
     filename_2 = "pose2.csv"; % GPS/IMU
     ```
 
-2. Run `main_calibration_L2I_quat.m`
+2. Run `main_calibration_L2I_*.m`
 
 ## Camera to GPS/IMU
 
@@ -60,7 +60,7 @@ The extrinsic can be obtained by optimizing `x y z yaw pitch roll` or `x y z qw 
     filename_2 = "pose2.csv"; % GPS/IMU
     ```
 
-2. Run `main_calibration_C2I_quat.m`
+2. Run `main_calibration_C2I_*.m`
 
 ## Reference
 
