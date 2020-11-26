@@ -73,6 +73,7 @@ title('Trajectories')
 legend('Visual Odometry', 'GPS/IMU')
 %% Optimization
 fun = @(x)costFunction_C2I_12(pose_1_sync, pose_2_sync, x);
+options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
 % Constrained
 A = [];
 b = [];
@@ -80,16 +81,16 @@ Aeq = [];
 beq = [];
 lb = [-1 * ones(1, 12), 1];
 ub = [ones(1, 12), 10];
-options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-x0 = [2 * rand(1, 12) - 1, 5];% 12 elements + 1 scale
+x0 = [2 * rand(1, 12) - 1, 5]; % x y z (m) 9 elements + 1 scale
 % x0 = (lb + ub)/2;
 % x0 = [0.3, 0.11, -0.85, 0, 0, pi / 2, 3]; % Measurement: x y z (m) yaw pitch roll (rad)
 [x,fval,exitflag,output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub, [], options); % Constrained
-% fprintf("Camera -> GPS/IMU Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tqw\t\t|\tqx\t\t|\tqy\t\t|\tqz\t\t|\tScale\t|\n")
-% fprintf("Camera -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x)
 %% Transform
-R12 = [x(1, 1 : 3); x(1, 4 : 6); x(1, 7 : 9)];
-t12 = x(1, 10 : 12)';
+R12 = [x(1, 4 : 6); x(1, 7 : 9); x(1, 10 : 12)];
+t12 = x(1, 1 : 3)';
+eul = rotm2eul(R12, 'ZYX');
+fprintf("Camera -> GPS/IMU Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tYaw\t\t|\tPitch\t|\tRoll\t|\tScale\t|\n")
+fprintf("Camera -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x(1, 1 : 3), eul, x(1, 13))
 T12 = [R12, t12; zeros(1, 3), 1];
 scale = x(1, 13);
 fprintf("T12 = \n")

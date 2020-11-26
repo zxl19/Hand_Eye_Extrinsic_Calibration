@@ -71,6 +71,7 @@ title('Trajectories')
 legend('LiDAR Odometry', 'GPS/IMU')
 %% Optimization
 fun = @(x)costFunction_L2I_12(pose_1_sync, pose_2_sync, x);
+options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
 % Constrained
 A = [];
 b = [];
@@ -78,16 +79,16 @@ Aeq = [];
 beq = [];
 lb = -1 * ones(1, 12);
 ub = 1 * ones(1, 12);
-options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-x0 = 2 * rand(1, 12) - 1; % 12 elements
+x0 = 2 * rand(1, 12) - 1; % x y z (m) 9 elements 
 % x0 = (lb + ub)/2;
 % x0 = [0.35, 0, -0.13, pi / 2, 0, 0]; % Measurement: x y z (m) yaw pitch roll (rad)
 [x, fval, exitflag, output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub,[], options); % Constrained
-% fprintf("LiDAR -> GPS/IMU Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tqw\t\t|\tqx\t\t|\tqy\t\t|\tqz\t\t|\n")
-% fprintf("LiDAR -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x)
 %% Transform
-R12 = [x(1, 1 : 3); x(1, 4 : 6); x(1, 7 : 9)];
-t12 = x(1, 10 : 12)';
+R12 = [x(1, 4 : 6); x(1, 7 : 9); x(1, 10 : 12)];
+t12 = x(1, 1 : 3)';
+eul = rotm2eul(R12, 'ZYX');
+fprintf("LiDAR -> GPS/IMU Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tYaw\t\t|\tPitch\t|\tRoll\t|\n")
+fprintf("LiDAR -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x(1, 1 : 3), eul)
 T12 = [R12, t12; zeros(1, 3), 1];
 fprintf("T12 = \n")
 disp(T12)

@@ -71,24 +71,28 @@ title('Trajectories')
 legend('LiDAR Odometry', 'GPS/IMU')
 %% Optimization
 fun = @(x)costFunction_L2I_quat(pose_1_sync, pose_2_sync, x);
+options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
 % Constrained
 A = [];
 b = [];
 Aeq = [];
 beq = [];
-lb = [-1, -1, -1, -2, -2, -2, -2]; % x y z qw qx qy qz
+lb = [-1, -1, -1, -2, -2, -2, -2];
 ub = [1, 1, 1, 2, 2, 2, -2];
-x0 = (lb + ub)/2;
-x0(1, 4 : 7) = [1, 0, 0, 0];% qw qx qy qz
+x0 = (lb + ub)/2; % x y z (m) qw qx qy qz
+x0(1, 4 : 7) = [1, 0, 0, 0]; % qw qx qy qz
 % x0 = [0.35, 0, -0.13, pi / 2, 0, 0]; % Measurement: x y z (m) yaw pitch roll (rad)
-[x, fval, exitflag, output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub); % Constrained
+[x, fval, exitflag, output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub, [], options); % Constrained
 % x(1, 4 : 7) = normalize(x(1, 4 : 7)); % Do Not Use!!!
 x(1, 4 : 7) = x(1, 4 : 7) / sqrt(sum(x(1, 4 : 7).^2));
+%% Transform
+% R12 = quat2rotm(x(1, 4 : 7));
+% t12 = x(1, 1 : 3)';
 fprintf("LiDAR -> GPS/IMU Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tqw\t\t|\tqx\t\t|\tqy\t\t|\tqz\t\t|\n")
 fprintf("LiDAR -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x)
-%% Transform
-R12 = quat2rotm(x(1, 4 : 7));
-t12 = x(1, 1 : 3);
+eul = quat2eul(x(1, 4 : 7), 'ZYX');
+fprintf("LiDAR -> GPS/IMU Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tYaw\t\t|\tPitch\t|\tRoll\t|\n")
+fprintf("LiDAR -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x(1, 1 : 3), eul)
 T12 = quat2tform(x(1, 4 : 7));
 T12(1 : 3, 4) = x(1, 1 : 3)';
 fprintf("T12 = \n")

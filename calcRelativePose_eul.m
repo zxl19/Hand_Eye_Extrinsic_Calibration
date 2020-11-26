@@ -1,4 +1,4 @@
-function [R_ab, t_ab] = calcRelativePose(pose_a, pose_b)
+function [R_ab, t_ab] = calcRelativePose_eul(pose_a, pose_b)
 R_a = eul2rotm(pose_a(1, 4 : 6), 'ZYX');
 t_a = pose_a(1, 1 : 3)';
 R_b = eul2rotm(pose_b(1, 4 : 6), 'ZYX');

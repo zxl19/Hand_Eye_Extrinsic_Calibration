@@ -73,6 +73,7 @@ title('Trajectories')
 legend('Visual Odometry', 'GPS/IMU')
 %% Optimization
 fun = @(x)costFunction_C2I_quat(pose_1_sync, pose_2_sync, x);
+options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
 % Constrained
 A = [];
 b = [];
@@ -80,17 +81,20 @@ Aeq = [];
 beq = [];
 lb = [-1, -1, -1, -2, -2, -2, -2, 0];
 ub = [1, 1, 1, 2, 2, 2, 2, 10];
-x0 = (lb + ub) / 2;
-x0(1, 4 : 7) = [1, 0, 0, 0];% qw qx qy qz
-% x0 = [0.3, 0.11, -0.85, 0, 0, pi / 2, 3]; % Measurement: x y z (m) yaw pitch roll (rad)
-[x,fval,exitflag,output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub); % Constrained
+x0 = (lb + ub) / 2; % x y z (m) qw qx qy qz scale
+x0(1, 4 : 7) = [1, 0, 0, 0]; % qw qx qy qz
+% x0 = [0.3, 0.11, -0.85, 0, 0, pi / 2, 3]; % Measurement: x y z (m) yaw pitch roll (rad) scale
+[x,fval,exitflag,output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub, [], options); % Constrained
 % x(1, 4 : 7) = normalize(x(1, 4 : 7)); % Do Not Use!!!
 x(1, 4 : 7) = x(1, 4 : 7) / sqrt(sum(x(1, 4 : 7).^2));
+%% Transform
+% R12 = quat2rotm(x(1, 4 : 7));
+% t12 = x(1, 1 : 3);
 fprintf("Camera -> GPS/IMU Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tqw\t\t|\tqx\t\t|\tqy\t\t|\tqz\t\t|\tScale\t|\n")
 fprintf("Camera -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x)
-%% Transform
-R12 = quat2rotm(x(1, 4 : 7));
-t12 = x(1, 1 : 3);
+eul = quat2eul(x(1, 4 : 7), 'ZYX');
+fprintf("Camera -> GPS/IMU Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tYaw\t\t|\tPitch\t|\tRoll\t|\tScale\t|\n")
+fprintf("Camera -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x(1, 1 : 3), eul, x(1, 8))
 scale = x(1, 8);
 T12 = quat2tform(x(1, 4 : 7));
 T12(1 : 3, 4) = x(1, 1 : 3)';
