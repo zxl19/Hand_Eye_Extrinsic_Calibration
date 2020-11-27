@@ -48,8 +48,6 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
 
 ### Data Preparation
 
-
-
 ### Calibration
 
 1. Change filenames of `.csv` files.
