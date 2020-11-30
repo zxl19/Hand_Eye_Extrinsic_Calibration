@@ -14,8 +14,11 @@ for i = 2 : n
 %         mu(2) * norm(R_1 * t + t_1 * s - R * t_2 - t, 2) + ...
 %         mu(2) * norm(x0(1, 1 : 3) - [0.3, 0.11, -0.85], 2); % Consider Measurement
     loss = loss + mu(1) * (norm(R_1 * R - R * R_2, 2))^2 + ...
-        mu(2) * (norm(R_1 * t + t_1 * s - R * t_2 - t, 2))^2;
+        mu(2) * (norm(R_1 * t + t_1 * s - R * t_2 - t, 2))^2; % Work
+%     loss = loss + mu(1) * sum(sum((R_1 * R - R * R_2).^2)) + ...
+%         mu(2) * sum(sum((R_1 * t + t_1 * s - R * t_2 - t).^2)); % Test
 end
 % loss = loss + mu(3) * norm(R * R' - eye(3), 2) + mu(4) * norm(R * R' - eye(3), 2);  % Worse
-loss = loss + mu(3) * norm(R * R' - eye(3), 2)^2 + mu(4) * norm(R * R' - eye(3), 2)^2;
+loss = loss + mu(3) * norm(R * R' - eye(3), 2)^2 + mu(4) * norm(R * R' - eye(3), 2)^2; % Work
+% loss = loss + mu(3) * sum(sum((R * R' - eye(3)).^2)) + mu(4) * sum(sum((R * R' - eye(3)).^2)); % Test
 end
