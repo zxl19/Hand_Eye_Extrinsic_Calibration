@@ -16,8 +16,8 @@ format long
 % y (front)
 % z (up)
 %% Pose Filename Setup
-filename_1 = "pose1.csv"; % LiDAR Odometry
-filename_2 = "pose2.csv"; % GPS/IMU
+filename_1 = "pose1_3.csv"; % LiDAR Odometry
+filename_2 = "pose2_3.csv"; % GPS/IMU
 %% Read LiDAR Odometry and GPS/IMU Data
 T_1 = readtable(filename_1);
 T_2 = readtable(filename_2);
