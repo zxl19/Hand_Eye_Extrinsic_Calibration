@@ -19,29 +19,19 @@ format long
 filename_1 = "pose1_3.csv"; % LiDAR Odometry
 filename_2 = "pose2_3.csv"; % GPS/IMU
 %% Read LiDAR Odometry and GPS/IMU Data
-T_1 = readtable(filename_1);
-T_2 = readtable(filename_2);
-timestamp_1 = T_1{:, 1} * 1e-9; % s
-timestamp_2 = T_2{:, 1} * 1e-9; % s
-pose_1 = T_1{:, 7 : 13}; % x y z qx qy qz qw
-latitude = T_2{:, 31};
-longitude = T_2{:, 33};
-altitude = T_2{:, 35};
-roll = deg2rad(T_2{:, 45}); % rad
-pitch = deg2rad(T_2{:, 47}); % rad
-azimuth = deg2rad(T_2{:, 49}); % rad
-pose_2 = [latitude, longitude, altitude, -azimuth, pitch, roll]; % latitude longitude altitude yaw pitch roll
+[timestamp_1, pose_1] = readLO(filename_1);
+[timestamp_2, pose_2] = readNovatel(filename_2);
 %% Data Synchronization or Pose Interpolation (TODO)
 threshold = 0.005;
 flag = true; % Print Synchronized Timestamp
 [pose_1_sync, timestamp_1_sync, pose_2_sync, timestamp_2_sync] = sync(pose_1, timestamp_1, pose_2, timestamp_2, threshold, flag);
 %% Coordinate Transformation
-R0_1 = quat2rotm(pose_1_sync(1, [7, 4 : 6])); % qw qx qy qz
+R0_1 = quat2rotm(pose_1_sync(1, 4 : 7)); % qw qx qy qz
 t0_1 = pose_1_sync(1, 1 : 3);
 [m, ~] = size(pose_1_sync);
 for i = 1 : m
     pose_1_sync(i, 1 : 3) = R0_1 \ (pose_1_sync(i, 1 : 3)' - t0_1');
-    R = R0_1 \ quat2rotm(pose_1_sync(i, [7, 4 : 6])); % qw qx qy qz
+    R = R0_1 \ quat2rotm(pose_1_sync(i, 4 : 7)); % qw qx qy qz
     quat = rotm2quat(R); % qw qx qy qz
     pose_1_sync(i, 4 : 7) = quat; % qw qx qy qz
 end
@@ -53,7 +43,7 @@ t0_2 = pose_2_sync(1, 1 : 3);
 [n, ~] = size(pose_2_sync);
 for i = 1 : n
     pose_2_sync(i, 1 : 3) = R0_2 \ (pose_2_sync(i, 1 : 3)' - t0_2');
-    R = R0_2 \ eul2rotm(pose_2_sync(i, 4 : 6), 'ZYX');
+    R = R0_2 \ eul2rotm(pose_2_sync(i, 4 : 6), 'ZYX'); % ZYX
     quat = rotm2quat(R); % qw qx qy qz
     pose_2_sync(i, 4 : 7) = quat; % qw qx qy qz
 end

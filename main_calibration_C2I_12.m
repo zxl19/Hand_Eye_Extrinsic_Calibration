@@ -20,19 +20,10 @@ filename_1 = "pose6.txt"; % Visual Odometry
 filename_2 = "pose2.csv"; % GPS/IMU
 filename_3 = "imu_time.csv"; % IMU Time
 %% Read LiDAR Odometry and GPS/IMU Data
-T_1 = readtable(filename_1);
-T_2 = readtable(filename_2);
+[timestamp_1, pose_1] = readVO(filename_1);
+[~, pose_2] = readNovatel(filename_2);
 T_3 = readtable(filename_3);
-timestamp_1 = T_1{:, 1}; % s
 timestamp_2 = T_3{:, 3} + T_3{:, 4} * 1e-9; % s
-pose_1 = T_1{:, 2 : 8}; % x y z qw qx qy qz
-latitude = T_2{:, 31};
-longitude = T_2{:, 33};
-altitude = T_2{:, 35};
-roll = deg2rad(T_2{:, 45}); % rad
-pitch = deg2rad(T_2{:, 47}); % rad
-azimuth = deg2rad(T_2{:, 49}); % rad
-pose_2 = [latitude, longitude, altitude, -azimuth, pitch, roll]; % latitude longitude altitude yaw pitch roll
 %% Data Synchronization or Pose Interpolation (TODO)
 threshold = 0.001;
 flag = true; % Print Synchronized Timestamp
