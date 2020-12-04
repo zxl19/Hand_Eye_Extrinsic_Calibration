@@ -6,6 +6,11 @@ MATLAB code for LiDAR-GPS/IMU and Camera-GPS/IMU extrinsic calibration based on 
 
 The rotation part of the extrinsic can be represented by euler angles, quaternions or 9 elements of the rotation matrix. We have implemented those 3 representations respectively by optimizing `x y z yaw pitch roll` or `x y z qw qx qy qz` or `x y z r_11 r_12 r_13 r_21 r_22 r_23 r_31 r_32 r_33`[^1].
 
+## Prerequisites
+
+1. Tested on Ubuntu 16.04 and ROS Kinetic.
+2. Tested on MATLAB 2020a.
+
 ## Data Preparation
 
 1. Drive the vehicle in a "$\infty$" shaped trajectory.
@@ -68,10 +73,15 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
     ```
 
 2. Run `main_calibration_L2I_*.m`
+    - eul: Use euler angles to represent rotation.
+    - quat: Use quaternions to represent rotation.
+    - 12: Use 12 elements of the rotation matrix to represent rotation.
 
 ## Camera to GPS/IMU
 
 ### Camera Pose Estimation
+
+We use [COLMAP](https://github.com/colmap/colmap) to estimate camera pose.
 
 ### Calibration
 
@@ -85,12 +95,15 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
     ```
 
 2. Run `main_calibration_C2I_*.m`
+    - eul: Use euler angles to represent rotation.
+    - quat: Use quaternions to represent rotation.
+    - 12: Use 12 elements of the rotation matrix to represent rotation.
 
 ## Reference
 
 1. [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM)
 2. [rosbag_to_csv](https://github.com/AtsushiSakai/rosbag_to_csv)
-3. [MATLAB-GPS-Calculations](https://github.com/alexbuczynsky/MATLAB-GPS-Calculations)
-4. [COLMAP](https://github.com/colmap/colmap)
+3. [COLMAP](https://github.com/colmap/colmap)
+4. [MATLAB-GPS-Calculations](https://github.com/alexbuczynsky/MATLAB-GPS-Calculations)
 
 [^1]: Dornaika F, Horaud R. Simultaneous Robot-World and Hand-Eye Calibration[J]. IEEE Trans Robotics Automat, 1998, 14(4):617-622. [[LINK](https://ieeexplore.ieee.org/document/704233)]
