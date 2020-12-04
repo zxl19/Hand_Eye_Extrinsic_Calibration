@@ -8,8 +8,8 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
 
 ## Prerequisites
 
-1. Tested on Ubuntu 16.04 and ROS Kinetic.
-2. Tested on MATLAB 2020a.
+1. Ubuntu (tested on 16.04) and ROS (tested on Kinetic).
+2. MATLAB (tested on 2020a).
 
 ## Data Preparation
 
