@@ -76,6 +76,7 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
     - eul: Use euler angles to represent rotation.
     - quat: Use quaternions to represent rotation.
     - 12: Use 12 elements of the rotation matrix to represent rotation.
+    - quat_interp: Use interpolated quaternions to represent rotation. (recommended)
 
 ## Camera to INS
 
@@ -106,6 +107,7 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
     - eul: Use euler angles to represent rotation.
     - quat: Use quaternions to represent rotation.
     - 12: Use 12 elements of the rotation matrix to represent rotation.
+    - quat_interp: Use interpolated quaternions to represent rotation. (recommended)
 
 ## Reference
 
