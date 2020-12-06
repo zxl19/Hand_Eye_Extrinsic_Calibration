@@ -30,7 +30,7 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
     rosbag record -o out /aft_mapped_to_init /novatel_data/inspvax
     ```
 
-2. Convert rosbag to `.csv` format.
+2. Convert the recorded topics into `.csv` format.
     - Use [rosbag_to_csv](https://github.com/AtsushiSakai/rosbag_to_csv).
         - Change `line 30` and `line 42` in `/scripts/rosbag_to_csv.py`
             from:
@@ -81,7 +81,15 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
 
 ### Camera Pose Estimation
 
-We use [COLMAP](https://github.com/colmap/colmap) to estimate camera pose.
+1. We use [COLMAP](https://github.com/colmap/colmap) to estimate and export camera pose. The `.txt` pose output should be in the following format:
+
+    ```text
+    timestamp x y z qw qx qy qz
+    ```
+
+    where `timestamp` is the original timestamp when the data is recorded.
+
+2. Convert IMU topic into `.csv` format. We use IMU timestamp as the original INS timestamp.
 
 ### Calibration
 
