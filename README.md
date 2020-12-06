@@ -2,7 +2,7 @@
 
 **This repository is currently in progress.**
 
-MATLAB code for LiDAR-GPS/IMU and Camera-GPS/IMU extrinsic calibration based on hand-eye calibration method.
+MATLAB code for LiDAR-INS and Camera-INS extrinsic calibration based on hand-eye calibration method.
 
 The rotation part of the extrinsic can be represented by euler angles, quaternions or 9 elements of the rotation matrix. We have implemented those 3 representations respectively by optimizing `x y z yaw pitch roll` or `x y z qw qx qy qz` or `x y z r_11 r_12 r_13 r_21 r_22 r_23 r_31 r_32 r_33`[^1].
 
@@ -14,17 +14,17 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
 ## Data Preparation
 
 1. Drive the vehicle in a "$\infty$" shaped trajectory.
-2. Record LiDAR, camera, GPS/IMU and IMU topics.
+2. Record LiDAR, camera, INS and IMU topics.
 
     ```shell
     rosbag record -o calib /velodyne_points /usb_cam_left/image_raw/compressed /novatel_data/inspvax /imu/data
     ```
 
-## LiDAR to GPS/IMU Extrinsic Calibration
+## LiDAR to INS Extrinsic Calibration
 
 ### LiDAR Pose Estimation
 
-1. Record pose estimates of a SLAM algorithm (e.g. [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM)) and GPS/IMU pose output.
+1. Record pose estimates of a SLAM algorithm (e.g. [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM)) and INS pose output.
 
     ```shell
     rosbag record -o out /aft_mapped_to_init /novatel_data/inspvax
@@ -69,7 +69,7 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
     ```matlab
     %% Pose Filename Setup
     filename_1 = "pose1.csv"; % LiDAR Odometry
-    filename_2 = "pose2.csv"; % GPS/IMU
+    filename_2 = "pose2.csv"; % INS
     ```
 
 2. Run `main_calibration_L2I_*.m`
@@ -77,7 +77,7 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
     - quat: Use quaternions to represent rotation.
     - 12: Use 12 elements of the rotation matrix to represent rotation.
 
-## Camera to GPS/IMU
+## Camera to INS
 
 ### Camera Pose Estimation
 
@@ -90,7 +90,7 @@ We use [COLMAP](https://github.com/colmap/colmap) to estimate camera pose.
     ```matlab
     %% Pose Filename Setup
     filename_1 = "pose1.csv"; % Visual Odometry
-    filename_2 = "pose2.txt"; % GPS/IMU
+    filename_2 = "pose2.txt"; % INS
     filename_3 = "imu_time.csv"; % IMU Time
     ```
 
