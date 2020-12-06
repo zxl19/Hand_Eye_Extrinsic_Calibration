@@ -26,7 +26,7 @@ T_3 = readtable(filename_3);
 timestamp_2 = T_3{:, 3} + T_3{:, 4} * 1e-9; % s
 %% Data Synchronization or Pose Interpolation (TODO)
 threshold = 0.005;
-flag = true; % Print Synchronized Timestamp
+flag = false; % Print Synchronized Timestamp
 [pose_1_sync, timestamp_1_sync, pose_2_sync, timestamp_2_sync] = sync(pose_1, timestamp_1, pose_2, timestamp_2, threshold, flag);
 %% Coordinate Transformation
 R0_1 = quat2rotm(pose_1_sync(1, 4 : 7)); % qw qx qy qz
@@ -84,7 +84,8 @@ title('Trajectories')
 legend('Camera     Roll', 'Camera     Pitch', 'INS Roll', 'INS Pitch', 'Camera     Yaw', 'INS Yaw', 'Location', 'SouthWest')
 %% Optimization
 fun = @(x)costFunction_C2I_eul(pose_1_sync, pose_2_sync, x);
-options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
+% options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
+options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
 % Constrained
 A = [];
 b = [];

@@ -16,6 +16,8 @@ format long
 % y (front)
 % z (up)
 %% Pose Filename Setup
+% filename_1 = "pose1.csv"; % LiDAR Odometry
+% filename_2 = "pose2.csv"; % INS
 filename_1 = "pose1_3.csv"; % LiDAR Odometry
 filename_2 = "pose2_3.csv"; % INS
 %% Read LiDAR Odometry and INS Data
@@ -23,7 +25,7 @@ filename_2 = "pose2_3.csv"; % INS
 [timestamp_2, pose_2] = readNovatel(filename_2);
 %% Data Synchronization or Pose Interpolation (TODO)
 threshold = 0.005;
-flag = true; % Print Synchronized Timestamp
+flag = false; % Print Synchronized Timestamp
 [pose_1_sync, timestamp_1_sync, pose_2_sync, timestamp_2_sync] = sync(pose_1, timestamp_1, pose_2, timestamp_2, threshold, flag);
 %% Coordinate Transformation
 R0_1 = quat2rotm(pose_1_sync(1, 4 : 7)); % qw qx qy qz
@@ -81,7 +83,8 @@ title('Trajectories')
 legend('LiDAR      Roll', 'LiDAR      Pitch', 'INS Roll', 'INS Pitch', 'LiDAR      Yaw', 'INS Yaw', 'Location', 'SouthWest')
 %% Optimization
 fun = @(x)costFunction_L2I_eul(pose_1_sync, pose_2_sync, x);
-options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
+% options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
+options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
 % Constrained
 A = [];
 b = [];
