@@ -11,15 +11,15 @@ format long
 % x (right)
 % y (down)
 % z (front)
-% GPS/IMU Coordinate
+% INS Coordinate
 % x (right)
 % y (front)
 % z (up)
 %% Pose Filename Setup
 filename_1 = "pose6.txt"; % Visual Odometry
-filename_2 = "pose2.csv"; % GPS/IMU
+filename_2 = "pose2.csv"; % INS
 filename_3 = "imu_time.csv"; % IMU Time
-%% Read LiDAR Odometry and GPS/IMU Data
+%% Read LiDAR Odometry and INS Data
 [timestamp_1, pose_1] = readVO(filename_1);
 [~, pose_2] = readNovatel(filename_2);
 T_3 = readtable(filename_3);
@@ -62,7 +62,7 @@ xlabel('X / m')
 ylabel('Y / m')
 zlabel('Z / m')
 title('Trajectories')
-legend('Visual Odometry', 'GPS/IMU')
+legend('Visual Odometry', 'INS')
 figure
 hold on
 grid on
@@ -81,7 +81,7 @@ plot(pose_2_sync(:, 6), '--^', 'LineWidth', 2)
 xlabel('Index')
 ylabel('Euler Angle / rad')
 title('Trajectories')
-legend('Camera     Roll', 'Camera     Pitch', 'GPS/IMU Roll', 'GPS/IMU Pitch', 'Camera     Yaw', 'GPS/IMU Yaw', 'Location', 'SouthWest')
+legend('Camera     Roll', 'Camera     Pitch', 'INS Roll', 'INS Pitch', 'Camera     Yaw', 'INS Yaw', 'Location', 'SouthWest')
 %% Optimization
 fun = @(x)costFunction_C2I_eul(pose_1_sync, pose_2_sync, x);
 options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
@@ -100,8 +100,8 @@ x0 = (lb + ub) / 2;  % x y z (m) yaw pitch roll (rad) scale
 %% Transform
 % R12 = eul2rotm(x(1, 4 : 6), 'ZYX');
 % t12 = x(1, 1 : 3)';
-fprintf("Camera -> GPS/IMU Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tYaw\t\t|\tPitch\t|\tRoll\t|\tScale\t|\n")
-fprintf("Camera -> GPS/IMU Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x)
+fprintf("Camera -> INS Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tYaw\t\t|\tPitch\t|\tRoll\t|\tScale\t|\n")
+fprintf("Camera -> INS Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x)
 scale = x(1, 7);
 T12 = eul2tform(x(1, 4 : 6), 'ZYX');
 T12(1 : 3, 4) = x(1, 1 : 3)';
@@ -126,7 +126,7 @@ axis equal
 plot3(pose_1_sync(:, 1), pose_1_sync(:, 2), pose_1_sync(:, 3), 'k^-.', 'LineWidth', 1)
 plot3(pose_L2I(:, 1), pose_L2I(:, 2), pose_L2I(:, 3), 'bo-', 'LineWidth', 2)
 plot3(pose_2_sync(:, 1), pose_2_sync(:, 2), pose_2_sync(:, 3), 'rs-', 'LineWidth', 2)
-legend('Camera Pose Original', 'Camera Pose Transformed', 'GPS/IMU', 'Location', 'NorthEast')
+legend('Camera Pose Original', 'Camera Pose Transformed', 'INS', 'Location', 'NorthEast')
 xlabel('X / m')
 ylabel('Y / m')
 zlabel('Z / m')
