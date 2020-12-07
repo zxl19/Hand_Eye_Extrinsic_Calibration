@@ -9,7 +9,7 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
 ## Prerequisites
 
 1. Ubuntu (tested on 16.04) and ROS (tested on Kinetic).
-2. MATLAB (tested on 2020a).
+2. MATLAB (tested on 2020a, with Robotics System Toolbox installed).
 
 ## Data Preparation
 
@@ -76,9 +76,9 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
     - eul: Use euler angles to represent rotation.
     - quat: Use quaternions to represent rotation.
     - 12: Use 12 elements of the rotation matrix to represent rotation.
-    - quat_interp: Use interpolated quaternions to represent rotation. (recommended)
+    - quat_interp: Use quaternions to represent rotation. Instead of synchronizing timestamps, we use cubic interpolation to smooth translation and spherical linear interpolation (SLERP) to smooth rotation. (recommended)
 
-## Camera to INS
+## Camera to INS Extrinsic Calibration
 
 ### Camera Pose Estimation
 
@@ -107,7 +107,7 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
     - eul: Use euler angles to represent rotation.
     - quat: Use quaternions to represent rotation.
     - 12: Use 12 elements of the rotation matrix to represent rotation.
-    - quat_interp: Use interpolated quaternions to represent rotation. (recommended)
+    - quat_interp: Use quaternions to represent rotation. Instead of synchronizing timestamps, we use cubic interpolation to smooth translation and spherical linear interpolation (SLERP) to smooth rotation. (recommended)
 
 ## Reference
 
