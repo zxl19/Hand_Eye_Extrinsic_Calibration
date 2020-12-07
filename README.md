@@ -6,12 +6,12 @@ MATLAB code for LiDAR-INS and Camera-INS extrinsic calibration based on hand-eye
 
 The rotation part of the extrinsic can be represented by euler angles, quaternions or 9 elements of the rotation matrix. We have implemented those 3 representations respectively by optimizing `x y z yaw pitch roll` or `x y z qw qx qy qz` or `x y z r_11 r_12 r_13 r_21 r_22 r_23 r_31 r_32 r_33`[^1].
 
-## Prerequisites
+## 1. Prerequisites
 
 1. Ubuntu (tested on 16.04) and ROS (tested on Kinetic).
 2. MATLAB (tested on 2020a, with Robotics System Toolbox installed).
 
-## Data Preparation
+## 2. Data Preparation
 
 1. Drive the vehicle in a "$\infty$" shaped trajectory.
 2. Record LiDAR, camera, INS and IMU topics.
@@ -20,9 +20,9 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
     rosbag record -o calib /velodyne_points /usb_cam_left/image_raw/compressed /novatel_data/inspvax /imu/data
     ```
 
-## LiDAR to INS Extrinsic Calibration
+## 3. LiDAR to INS Extrinsic Calibration
 
-### LiDAR Pose Estimation
+### 3.1 LiDAR Pose Estimation
 
 1. Record pose estimates of a SLAM algorithm (e.g. [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM)) and INS pose output.
 
@@ -62,7 +62,7 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
 
     - Or just use [my fork](https://github.com/zxl19/rosbag_to_csv).
 
-### Calibration
+### 3.2 Calibration
 
 1. Change filenames of `.csv` files.
 
@@ -78,9 +78,9 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
     - 12: Use 12 elements of the rotation matrix to represent rotation.
     - quat_interp: Use quaternions to represent rotation. Instead of synchronizing timestamps, we use cubic interpolation to smooth translation and spherical linear interpolation (SLERP) to smooth rotation. (recommended)
 
-## Camera to INS Extrinsic Calibration
+## 4. Camera to INS Extrinsic Calibration
 
-### Camera Pose Estimation
+### 4.1 Camera Pose Estimation
 
 1. We use [COLMAP](https://github.com/colmap/colmap) to estimate and export camera pose. The `.txt` pose output should be in the following format:
 
@@ -92,7 +92,7 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
 
 2. Convert IMU topic into `.csv` format. We use IMU timestamp as the original INS timestamp.
 
-### Calibration
+### 4.2 Calibration
 
 1. Change filenames of `.csv` and `.txt` files.
 
@@ -109,7 +109,7 @@ The rotation part of the extrinsic can be represented by euler angles, quaternio
     - 12: Use 12 elements of the rotation matrix to represent rotation.
     - quat_interp: Use quaternions to represent rotation. Instead of synchronizing timestamps, we use cubic interpolation to smooth translation and spherical linear interpolation (SLERP) to smooth rotation. (recommended)
 
-## Reference
+## 5. Reference
 
 1. [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM)
 2. [rosbag_to_csv](https://github.com/AtsushiSakai/rosbag_to_csv)
