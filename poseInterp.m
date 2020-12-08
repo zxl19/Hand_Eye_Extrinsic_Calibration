@@ -31,7 +31,7 @@ for i = 1 : n1
 %     x = interp1(timestamp_2, pose_2(:, 1), timestamp_1(i), 'linear');
 %     y = interp1(timestamp_2, pose_2(:, 2), timestamp_1(i), 'linear');
 %     z = interp1(timestamp_2, pose_2(:, 3), timestamp_1(i), 'linear');
-    % Cubic Interpolation
+    % Cubic Interpolation (Use 'pchip' instead of 'cubic')
     x = interp1(timestamp_2, pose_2(:, 1), timestamp_1(i), 'pchip');
     y = interp1(timestamp_2, pose_2(:, 2), timestamp_1(i), 'pchip');
     z = interp1(timestamp_2, pose_2(:, 3), timestamp_1(i), 'pchip');
@@ -39,4 +39,5 @@ for i = 1 : n1
     [qw, qx, qy, qz] = parts(slerp(lb_quat, ub_quat, T));
     pose_2_interp(ind, :) = [trans, qw, qx, qy, qz];
     ind = ind + 1;
+end
 end
