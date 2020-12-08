@@ -31,7 +31,23 @@ In order to avoid numerical error caused by the loss of precision during convers
     - `12`: Use 12 elements of the rotation matrix to represent rotation.
     - `quat_interp`: Use quaternions to represent rotation. Instead of synchronizing timestamps, we use cubic interpolation to smooth translation and spherical linear interpolation (SLERP) to smooth rotation. (**recommended**)
 
-## 4. Reference
+## 4. Results
+
+### 4.1 LiDAR to INS
+
+<center class="half">
+    <img src="./images/L2I_before.png" width="250"/>
+    <img src="./images/L2I_after.png" width="250"/>
+</center>
+
+## 4.2 Camera to INS
+
+<center class="half">
+    <img src="./images/C2I_before.png" width="250"/>
+    <img src="./images/C2I_after.png" width="250"/>
+</center>
+
+## 5. Reference
 
 1. [MATLAB-GPS-Calculations](https://github.com/alexbuczynsky/MATLAB-GPS-Calculations)
 
