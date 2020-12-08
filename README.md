@@ -35,10 +35,15 @@ In order to avoid numerical error caused by the loss of precision during convers
 
 ### 4.1 LiDAR to INS
 
-<figure class="half">
-    <img src="./images/L2I_before.png" width="300"/>
-    <img src="./images/L2I_after.png" width="300"/>
-</figure>
+<p align = "center">
+    <img src = "./images/L2I_before.png" width="300"/>
+    <img src = "./images/L2I_after.png" width="300"/>
+</p>
+
+<p align = "center">
+    <img src = "./images/C2I_before.png" width="300"/>
+    <img src = "./images/C2I_after.png" width="300"/>
+</p>
 
 ## 4.2 Camera to INS
 
