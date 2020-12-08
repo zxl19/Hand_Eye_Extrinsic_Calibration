@@ -3,9 +3,9 @@ clear
 clc
 format long
 %% README
-% Convert .csv format data file to .mat format.
+% Convert formatted pose file to .mat format.
 %% Filename Setup
-input_filename = "../raw_data/xxx.csv"; % Change input .csv filename here.
+input_filename = "../raw_data/xxx.csv"; % Change input pose filename here.
 output_filename = "../data/xxx.mat";    % Change output .mat filename here.
 %% Read Data
 T = readtable(input_filename);
