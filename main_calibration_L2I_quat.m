@@ -16,13 +16,17 @@ format long
 % y (front)
 % z (up)
 %% Pose Filename Setup
-% filename_1 = "pose1.csv"; % LiDAR Odometry
-% filename_2 = "pose2.csv"; % INS
-filename_1 = "pose1_3.csv"; % LiDAR Odometry
-filename_2 = "pose2_3.csv"; % INS
+filename_1 = "./data/LO.mat"; % LiDAR Odometry
+filename_2 = "./data/INS.mat"; % INS
+% filename_1 = "./data/LO_3.mat"; % LiDAR Odometry
+% filename_2 = "./data/INS_3.mat"; % INS
 %% Read LiDAR Odometry and INS Data
-[timestamp_1, pose_1] = readLO(filename_1);
-[timestamp_2, pose_2] = readNovatel(filename_2);
+data_1 = load(filename_1, '-ascii');
+data_2 = load(filename_2, '-ascii');
+timestamp_1 = data_1(:, 1);
+timestamp_2 = data_2(:, 1);
+pose_1 = data_1(:, 2 : 8);
+pose_2 = data_2(:, 2 : 8);
 %% Data Synchronization or Pose Interpolation (TODO)
 threshold = 0.005;
 flag = false; % Print Synchronized Timestamp
@@ -37,15 +41,12 @@ for i = 1 : m
     quat = rotm2quat(R); % qw qx qy qz
     pose_1_sync(i, 4 : 7) = quat; % qw qx qy qz
 end
-[X, Y, ~] = deg2utm(pose_2_sync(:, 1), pose_2_sync(:, 2));
-pose_2_sync(:, 1) = X;
-pose_2_sync(:, 2) = Y;
-R0_2 = eul2rotm(pose_2_sync(1, 4 : 6), 'ZYX'); % ZYX
+R0_2 = quat2rotm(pose_2_sync(1, 4 : 7));
 t0_2 = pose_2_sync(1, 1 : 3);
 [n, ~] = size(pose_2_sync);
 for i = 1 : n
     pose_2_sync(i, 1 : 3) = R0_2 \ (pose_2_sync(i, 1 : 3)' - t0_2');
-    R = R0_2 \ eul2rotm(pose_2_sync(i, 4 : 6), 'ZYX'); % ZYX
+    R = R0_2 \ quat2rotm(pose_2_sync(i, 4 : 7)); % qw qx qy qz
     quat = rotm2quat(R); % qw qx qy qz
     pose_2_sync(i, 4 : 7) = quat; % qw qx qy qz
 end

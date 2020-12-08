@@ -16,13 +16,17 @@ format long
 % y (front)
 % z (up)
 %% Pose Filename Setup
-% filename_1 = "pose1.csv"; % LiDAR Odometry
-% filename_2 = "pose2.csv"; % INS
-filename_1 = "pose1_3.csv"; % LiDAR Odometry
-filename_2 = "pose2_3.csv"; % INS
+% filename_1 = "./data/LO.mat"; % LiDAR Odometry
+% filename_2 = "./data/INS.mat"; % INS
+filename_1 = "./data/LO_3.mat"; % LiDAR Odometry
+filename_2 = "./data/INS_3.mat"; % INS
 %% Read LiDAR Odometry and INS Data
-[timestamp_1, pose_1] = readLO(filename_1);
-[timestamp_2, pose_2] = readNovatel(filename_2);
+data_1 = load(filename_1, '-ascii');
+data_2 = load(filename_2, '-ascii');
+timestamp_1 = data_1(:, 1);
+timestamp_2 = data_2(:, 1);
+pose_1 = data_1(:, 2 : 8);
+pose_2 = data_2(:, 2 : 8);
 %% Coordinate Transformation
 R0_1 = quat2rotm(pose_1(1, 4 : 7)); % qw qx qy qz
 t0_1 = pose_1(1, 1 : 3);
@@ -33,15 +37,12 @@ for i = 1 : m
     quat = rotm2quat(R); % qw qx qy qz
     pose_1(i, 4 : 7) = quat; % qw qx qy qz
 end
-[X, Y, ~] = deg2utm(pose_2(:, 1), pose_2(:, 2));
-pose_2(:, 1) = X;
-pose_2(:, 2) = Y;
-R0_2 = eul2rotm(pose_2(1, 4 : 6), 'ZYX'); % ZYX
+R0_2 = quat2rotm(pose_2(1, 4 : 7));
 t0_2 = pose_2(1, 1 : 3);
 [n, ~] = size(pose_2);
 for i = 1 : n
     pose_2(i, 1 : 3) = R0_2 \ (pose_2(i, 1 : 3)' - t0_2');
-    R = R0_2 \ eul2rotm(pose_2(i, 4 : 6), 'ZYX'); % ZYX
+    R = R0_2 \ quat2rotm(pose_2(i, 4 : 7)); % qw qx qy qz
     quat = rotm2quat(R); % qw qx qy qz
     pose_2(i, 4 : 7) = quat; % qw qx qy qz
 end
@@ -57,12 +58,13 @@ plot3(pose_2_interp(:, 1), pose_2_interp(:, 2), pose_2_interp(:, 3), 'rs-', 'Lin
 xlabel('X / m')
 ylabel('Y / m')
 zlabel('Z / m')
-title('Trajectories')
+title('Before Calibration')
 legend('LiDAR Odometry', 'INS')
 %% Optimization
 fun = @(x)costFunction_L2I_quat_interp(pose_1_interp, pose_2_interp, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
+% options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
+options = optimset('PlotFcns', 'optimplotfval');
 % Constrained
 A = [];
 b = [];
@@ -86,10 +88,10 @@ fprintf("LiDAR -> INS Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tYaw\t\t|\tPitch\t|\t
 fprintf("LiDAR -> INS Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x(1, 1 : 3), eul)
 T12 = quat2tform(x(1, 4 : 7));
 T12(1 : 3, 4) = x(1, 1 : 3)';
-% fprintf("T12 = \n")
-% disp(T12)
-% fprintf("T12^-1 = \n")
-% disp(inv(T12))
+fprintf("T12 = \n")
+disp(T12)
+fprintf("T12^-1 = \n")
+disp(inv(T12))
 [m, ~] = size(pose_1_interp);
 pose_L2I = zeros(m, 7);
 for i = 1 : m
@@ -107,7 +109,8 @@ axis equal
 plot3(pose_1_interp(:, 1), pose_1_interp(:, 2), pose_1_interp(:, 3), 'k^-.', 'LineWidth', 1)
 plot3(pose_L2I(:, 1), pose_L2I(:, 2), pose_L2I(:, 3), 'bo-', 'LineWidth', 2)
 plot3(pose_2_interp(:, 1), pose_2_interp(:, 2), pose_2_interp(:, 3), 'rs-', 'LineWidth', 2)
-legend('LiDAR Pose Original', 'LiDAR Pose Transformed', 'INS', 'Location', 'NorthEast')
 xlabel('X / m')
 ylabel('Y / m')
 zlabel('Z / m')
+title('After Calibration')
+legend('LiDAR Pose Original', 'LiDAR Pose Transformed', 'INS')

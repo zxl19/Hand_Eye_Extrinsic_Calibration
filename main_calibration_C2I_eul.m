@@ -16,15 +16,18 @@ format long
 % y (front)
 % z (up)
 %% Pose Filename Setup
-filename_1 = "pose6.txt"; % Visual Odometry
-filename_2 = "pose2.csv"; % INS
-filename_3 = "imu_time.csv"; % IMU Time
+filename_1 = "./data/VO.mat"; % Visual Odometry
+filename_2 = "./data/INS.mat"; % INS
+filename_3 = "./data/IMU.mat"; % IMU Time
 %% Read LiDAR Odometry and INS Data
-[timestamp_1, pose_1] = readVO(filename_1);
-[~, pose_2] = readNovatel(filename_2);
-T_3 = readtable(filename_3);
-timestamp_2 = T_3{:, 3} + T_3{:, 4} * 1e-9; % s
-%% Data Synchronization or Pose Interpolation (TODO)
+data_1 = load(filename_1, '-ascii');
+data_2 = load(filename_2, '-ascii');
+data_3 = load(filename_3, '-ascii');
+timestamp_1 = data_1(:, 1);
+timestamp_2 = data_3(:, 1);
+pose_1 = data_1(:, 2 : 8);
+pose_2 = data_2(:, 2 : 8);
+%% Data Synchronization
 threshold = 0.005;
 flag = false; % Print Synchronized Timestamp
 [pose_1_sync, timestamp_1_sync, pose_2_sync, timestamp_2_sync] = sync(pose_1, timestamp_1, pose_2, timestamp_2, threshold, flag);
@@ -39,18 +42,16 @@ for i = 1 : m
     pose_1_sync(i, 4 : 6) = eul; % ZYX
 end
 pose_1_sync(:, 7) = [];
-[X, Y, ~] = deg2utm(pose_2_sync(:, 1), pose_2_sync(:, 2));
-pose_2_sync(:, 1) = X;
-pose_2_sync(:, 2) = Y;
-R0_2 = eul2rotm(pose_2_sync(1, 4 : 6), 'ZYX'); % ZYX
+R0_2 = quat2rotm(pose_2_sync(1, 4 : 7)); % qw qx qy qz
 t0_2 = pose_2_sync(1, 1 : 3);
 [n, ~] = size(pose_2_sync);
 for i = 1 : n
     pose_2_sync(i, 1 : 3) = R0_2 \ (pose_2_sync(i, 1 : 3)' - t0_2');
-    R = R0_2 \ eul2rotm(pose_2_sync(i, 4 : 6), 'ZYX');
+    R = R0_2 \ quat2rotm(pose_2_sync(i, 4 : 7)); % qw qx qy qz
     eul = rotm2eul(R, 'ZYX'); % rad
     pose_2_sync(i, 4 : 6) = eul; % ZYX
 end
+pose_2_sync(:, 7) = [];
 %% Plot to Check Data
 figure
 hold on
@@ -61,7 +62,7 @@ plot3(pose_2_sync(:, 1), pose_2_sync(:, 2), pose_2_sync(:, 3), 'rs-', 'LineWidth
 xlabel('X / m')
 ylabel('Y / m')
 zlabel('Z / m')
-title('Trajectories')
+title('Before Calibration')
 legend('Visual Odometry', 'INS')
 figure
 hold on
@@ -80,12 +81,13 @@ yyaxis right
 plot(pose_2_sync(:, 6), '--^', 'LineWidth', 2)
 xlabel('Index')
 ylabel('Euler Angle / rad')
-title('Trajectories')
+title('Before Calibration')
 legend('Camera     Roll', 'Camera     Pitch', 'INS Roll', 'INS Pitch', 'Camera     Yaw', 'INS Yaw', 'Location', 'SouthWest')
 %% Optimization
 fun = @(x)costFunction_C2I_eul(pose_1_sync, pose_2_sync, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
+% options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
+options = optimset('PlotFcns', 'optimplotfval');
 % Constrained
 A = [];
 b = [];
@@ -127,7 +129,8 @@ axis equal
 plot3(pose_1_sync(:, 1), pose_1_sync(:, 2), pose_1_sync(:, 3), 'k^-.', 'LineWidth', 1)
 plot3(pose_L2I(:, 1), pose_L2I(:, 2), pose_L2I(:, 3), 'bo-', 'LineWidth', 2)
 plot3(pose_2_sync(:, 1), pose_2_sync(:, 2), pose_2_sync(:, 3), 'rs-', 'LineWidth', 2)
-legend('Camera Pose Original', 'Camera Pose Transformed', 'INS', 'Location', 'NorthEast')
 xlabel('X / m')
 ylabel('Y / m')
 zlabel('Z / m')
+title('After Calibration')
+legend('Camera Pose Original', 'Camera Pose Transformed', 'INS', 'Location', 'NorthEast')
