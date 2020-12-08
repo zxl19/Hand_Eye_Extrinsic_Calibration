@@ -40,17 +40,12 @@ In order to avoid numerical error caused by the loss of precision during convers
     <img src = "./images/L2I_after.png" width="300"/>
 </p>
 
+## 4.2 Camera to INS
+
 <p align = "center">
     <img src = "./images/C2I_before.png" width="300"/>
     <img src = "./images/C2I_after.png" width="300"/>
 </p>
-
-## 4.2 Camera to INS
-
-<figure class="half">
-    <img src="./images/C2I_before.png" width="300"/>
-    <img src="./images/C2I_after.png" width="300"/>
-</figure>
 
 ## 5. Reference
 
