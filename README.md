@@ -47,8 +47,4 @@ In order to avoid numerical error caused by the loss of precision during convers
     <img src = "./images/C2I_after.png" width="400"/>
 </p>
 
-## 5. Reference
-
-1. [MATLAB-GPS-Calculations](https://github.com/alexbuczynsky/MATLAB-GPS-Calculations)
-
 [^1]: Dornaika F, Horaud R. Simultaneous Robot-World and Hand-Eye Calibration[J]. IEEE Trans Robotics Automat, 1998, 14(4):617-622. [[LINK](https://ieeexplore.ieee.org/document/704233)]
