@@ -28,7 +28,7 @@ In order to avoid numerical error caused by the loss of precision during convers
 2. Run `main_calibration_L2I_*.m` for LiDAR-INS extrinsic calibration. Run `main_calibration_C2I_*.m` for camera-INS extrinsic calibration.
     - `eul`: Use euler angles to represent rotation.
     - `quat`: Use quaternions to represent rotation.
-    - `12`: Use 12 elements of the rotation matrix to represent rotation.
+    - `12`: Use 9 elements of the rotation matrix to represent rotation.
     - `quat_interp`: Use quaternions to represent rotation. Instead of synchronizing timestamps, we use cubic interpolation to smooth translation and spherical linear interpolation (SLERP) to smooth rotation. (**recommended**)
 
 ## 4. Results
