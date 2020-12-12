@@ -105,8 +105,7 @@ view(3)
 %% Optimization
 fun = @(x)costFunction_FCPE_quat_interp(pose_1_interp_13, pose_3_interp_13, pose_2_interp_23, pose_3_interp_23, pose_1_interp_12, pose_2_interp_12, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-% options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-options = optimset('PlotFcns', 'optimplotfval');
+options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
 % Constrained
 A = [];
 b = [];
@@ -162,27 +161,70 @@ fprintf("T12 = \n")
 disp(T12)
 %% Transform
 % LiDAR to INS
-[m, ~] = size(pose_1_interp);
+[m, ~] = size(pose_1_interp_13);
 pose_L2I = zeros(m, 7);
 for i = 1 : m
-    pose_1_temp = quat2tform(pose_1_interp(i, 4 : 7));
-    pose_1_temp(1 : 3, 4) = pose_1_interp(i, 1 : 3)';
-    pose_L2I_temp = T12 \ pose_1_temp * T12; % Correct
-%     pose_L2I_temp = pose_1_temp * T12; % Wrong !!!
+    pose_1_temp = quat2tform(pose_1_interp_13(i, 4 : 7));
+    pose_1_temp(1 : 3, 4) = pose_1_interp_13(i, 1 : 3)';
+    pose_L2I_temp = T13 \ pose_1_temp * T13; % Correct!!!
     pose_L2I(i, :) = [pose_L2I_temp(1 : 3, 4)', tform2quat(pose_L2I_temp)];
 end
 % Camera to INS
+[n, ~] = size(pose_2_interp_23);
+pose_C2I = zeros(n, 7);
+for i = 1 : n
+    pose_2_temp = quat2tform(pose_2_interp_23(i, 4 : 7));
+    pose_2_temp(1 : 3, 4) = pose_2_interp_23(i, 1 : 3)' * scale_23;
+    pose_C2I_temp = T23 \ pose_2_temp * T23; % Correct!!!
+    pose_C2I(i, :) = [pose_C2I_temp(1 : 3, 4)', tform2quat(pose_C2I_temp)];
+end
 % LiDAR to Camera
+[p, ~] = size(pose_1_interp_12);
+pose_L2C = zeros(p, 7);
+for i = 1 : p
+    pose_1_temp = quat2tform(pose_1_interp_12(i, 4 : 7));
+    pose_1_temp(1 : 3, 4) = pose_1_interp_12(i, 1 : 3)';
+    pose_L2C_temp = T12 \ pose_1_temp * T12; % Correct!!!
+    pose_L2C(i, :) = [pose_L2C_temp(1 : 3, 4)', tform2quat(pose_L2C_temp)];
+end
 %% Plot to Check Data
 figure
+subplot(1, 3, 1)
 hold on
 grid on
 axis equal
-plot3(pose_1_interp(:, 1), pose_1_interp(:, 2), pose_1_interp(:, 3), 'k^-.', 'LineWidth', 1)
+plot3(pose_1_interp_13(:, 1), pose_1_interp_13(:, 2), pose_1_interp_13(:, 3), 'k^-.', 'LineWidth', 1)
 plot3(pose_L2I(:, 1), pose_L2I(:, 2), pose_L2I(:, 3), 'bo-', 'LineWidth', 2)
-plot3(pose_2_interp(:, 1), pose_2_interp(:, 2), pose_2_interp(:, 3), 'rs-', 'LineWidth', 2)
+plot3(pose_3_interp_13(:, 1), pose_3_interp_13(:, 2), pose_3_interp_13(:, 3), 'rs-', 'LineWidth', 2)
 xlabel('X / m')
 ylabel('Y / m')
 zlabel('Z / m')
 title('After Calibration')
 legend('LiDAR Pose Original', 'LiDAR Pose Transformed', 'INS')
+view(3)
+subplot(1, 3, 2)
+hold on
+grid on
+axis equal
+plot3(pose_2_interp_23(:, 1), pose_2_interp_23(:, 2), pose_2_interp_23(:, 3), 'k^-.', 'LineWidth', 1)
+plot3(pose_C2I(:, 1), pose_C2I(:, 2), pose_C2I(:, 3), 'bo-', 'LineWidth', 2)
+plot3(pose_3_interp_23(:, 1), pose_3_interp_23(:, 2), pose_3_interp_23(:, 3), 'rs-', 'LineWidth', 2)
+xlabel('X / m')
+ylabel('Y / m')
+zlabel('Z / m')
+title('After Calibration')
+legend('Camera Pose Original', 'Camera Pose Transformed', 'INS')
+view(3)
+subplot(1, 3, 3)
+hold on
+grid on
+axis equal
+plot3(pose_1_interp_12(:, 1), pose_1_interp_12(:, 2), pose_1_interp_12(:, 3), 'k^-.', 'LineWidth', 1)
+plot3(pose_L2C(:, 1), pose_L2C(:, 2), pose_L2C(:, 3), 'bo-', 'LineWidth', 2)
+plot3(pose_2_interp_12(:, 1) * scale_12, pose_2_interp_12(:, 2) * scale_12, pose_2_interp_12(:, 3) * scale_12, 'rs-', 'LineWidth', 2)
+xlabel('X / m')
+ylabel('Y / m')
+zlabel('Z / m')
+title('After Calibration')
+legend('LiDAR Pose Original', 'LiDAR Pose Transformed', 'Camera Pose with Scale')
+view(3)
