@@ -1,6 +1,6 @@
 # Hand_Eye_Extrinsic_Calibration
 
-**This repository is currently in progress. Click "watch" in the upper right corner to be informed of the latest updates.**
+**This repository is currently in progress.**
 
 MATLAB code for LiDAR-Camera-INS extrinsic calibration based on hand-eye calibration method. The extrinsic between these three sensors can be calculated separately or in a fully connected manner.
 
