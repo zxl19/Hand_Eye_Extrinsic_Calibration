@@ -91,13 +91,13 @@ disp(T12)
 fprintf("T12^-1 = \n")
 disp(inv(T12))
 [m, ~] = size(pose_1_sync);
-pose_L2I = zeros(m, 7);
+pose_C2I = zeros(m, 7);
 for i = 1 : m
     pose_1_temp = quat2tform(pose_1_sync(i, 4 : 7));
     pose_1_temp(1 : 3, 4) = pose_1_sync(i, 1 : 3)' * scale;
-    pose_L2I_temp = T12 \ pose_1_temp * T12; % Correct
-%     pose_L2I_temp = pose_1_temp * T12; % Wrong !!!
-    pose_L2I(i, :) = [pose_L2I_temp(1 : 3, 4)', tform2quat(pose_L2I_temp)];
+    pose_C2I_temp = T12 \ pose_1_temp * T12; % Correct
+%     pose_C2I_temp = pose_1_temp * T12; % Wrong !!!
+    pose_C2I(i, :) = [pose_C2I_temp(1 : 3, 4)', tform2quat(pose_C2I_temp)];
 end
 %% Plot to Check Data
 figure
@@ -105,7 +105,7 @@ hold on
 grid on
 axis equal
 plot3(pose_1_sync(:, 1), pose_1_sync(:, 2), pose_1_sync(:, 3), 'k^-.', 'LineWidth', 1)
-plot3(pose_L2I(:, 1), pose_L2I(:, 2), pose_L2I(:, 3), 'bo-', 'LineWidth', 2)
+plot3(pose_C2I(:, 1), pose_C2I(:, 2), pose_C2I(:, 3), 'bo-', 'LineWidth', 2)
 plot3(pose_2_sync(:, 1), pose_2_sync(:, 2), pose_2_sync(:, 3), 'rs-', 'LineWidth', 2)
 xlabel('X / m')
 ylabel('Y / m')
