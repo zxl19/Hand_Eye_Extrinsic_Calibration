@@ -19,6 +19,8 @@ format long
 filename_1 = "./data/VO.mat"; % Visual Odometry
 filename_2 = "./data/INS.mat"; % INS
 filename_3 = "./data/IMU.mat"; % IMU Time
+filename_1_out = "./results/VO2INS.txt"; % Visual Odometry
+filename_2_out = "./results/INS_VO.txt"; % INS
 %% Read LiDAR Odometry and INS Data
 data_1 = load(filename_1, '-ascii');
 data_2 = load(filename_2, '-ascii');
@@ -94,13 +96,13 @@ disp(T12)
 fprintf("T12^-1 = \n")
 disp(inv(T12))
 [m, ~] = size(pose_1_interp);
-pose_L2I = zeros(m, 7);
+pose_C2I = zeros(m, 7);
 for i = 1 : m
     pose_1_temp = quat2tform(pose_1_interp(i, 4 : 7));
     pose_1_temp(1 : 3, 4) = pose_1_interp(i, 1 : 3)' * scale;
-    pose_L2I_temp = T12 \ pose_1_temp * T12; % Correct
-%     pose_L2I_temp = pose_1_temp * T12; % Wrong !!!
-    pose_L2I(i, :) = [pose_L2I_temp(1 : 3, 4)', tform2quat(pose_L2I_temp)];
+    pose_C2I_temp = T12 \ pose_1_temp * T12; % Correct
+%     pose_C2I_temp = pose_1_temp * T12; % Wrong !!!
+    pose_C2I(i, :) = [pose_C2I_temp(1 : 3, 4)', tform2quat(pose_C2I_temp)];
 end
 %% Plot to Check Data
 figure
@@ -108,10 +110,13 @@ hold on
 grid on
 axis equal
 plot3(pose_1_interp(:, 1), pose_1_interp(:, 2), pose_1_interp(:, 3), 'k^-.', 'LineWidth', 1)
-plot3(pose_L2I(:, 1), pose_L2I(:, 2), pose_L2I(:, 3), 'bo-', 'LineWidth', 2)
+plot3(pose_C2I(:, 1), pose_C2I(:, 2), pose_C2I(:, 3), 'bo-', 'LineWidth', 2)
 plot3(pose_2_interp(:, 1), pose_2_interp(:, 2), pose_2_interp(:, 3), 'rs-', 'LineWidth', 2)
 xlabel('X / m')
 ylabel('Y / m')
 zlabel('Z / m')
 title('After Calibration')
 legend('Camera Pose Original', 'Camera Pose Transformed', 'INS')
+%% Export Poses for Evaluation
+writematrix([timestamp_1_interp, pose_C2I], filename_1_out, 'Delimiter', ' ')
+writematrix([timestamp_2_interp, pose_2_interp], filename_2_out, 'Delimiter', ' ')

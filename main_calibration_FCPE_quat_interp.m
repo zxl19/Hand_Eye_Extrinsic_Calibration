@@ -19,6 +19,12 @@ format long
 filename_1 = "./data/LO_FCPE.mat"; % LiDAR Odometry
 filename_2 = "./data/VO_FCPE.mat"; % Visual Odometry
 filename_3 = "./data/INS_FCPE.mat"; % INS
+filename_1_out_13 = "./results/LO2INS_FCPE.txt"; % LiDAR Odometry
+filename_3_out_13 = "./results/INS_LO_FCPE.txt"; % INS for LiDAR
+filename_2_out_23 = "./results/VO2INS_FCPE.txt"; % Visual Odometry
+filename_3_out_23 = "./results/INS_VO_FCPE.txt"; % INS for Camera
+filename_1_out_12 = "./results/LO2VO_FCPE.txt"; % LiDAR Odometry
+filename_2_out_12 = "./results/VO_LO_FCPE.txt"; % Visual Odometry
 %% Read LiDAR Odometry and INS Data
 data_1 = load(filename_1, '-ascii');
 data_2 = load(filename_2, '-ascii');
@@ -228,3 +234,10 @@ zlabel('Z / m')
 title('After Calibration')
 legend('LiDAR Pose Original', 'LiDAR Pose Transformed', 'Camera Pose with Scale')
 view(3)
+%% Export Poses for Evaluation
+writematrix([timestamp_1_interp_13, pose_L2I], filename_1_out_13, 'Delimiter', ' ')
+writematrix([timestamp_3_interp_13, pose_3_interp_13], filename_3_out_13, 'Delimiter', ' ')
+writematrix([timestamp_2_interp_23, pose_C2I], filename_2_out_23, 'Delimiter', ' ')
+writematrix([timestamp_3_interp_23, pose_3_interp_23], filename_3_out_23, 'Delimiter', ' ')
+writematrix([timestamp_1_interp_12, pose_L2C], filename_1_out_12, 'Delimiter', ' ')
+writematrix([timestamp_2_interp_12, pose_2_interp_12 * scale_12], filename_2_out_12, 'Delimiter', ' ')

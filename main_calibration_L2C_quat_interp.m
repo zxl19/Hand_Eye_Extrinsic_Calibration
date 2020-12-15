@@ -18,6 +18,8 @@ format long
 %% Pose Filename Setup
 filename_1 = "./data/LO_FCPE.mat"; % LiDAR Odometry
 filename_2 = "./data/VO_FCPE.mat"; % Visual Odometry
+filename_1_out = "./results/LO2VO.txt"; % LiDAR Odometry
+filename_2_out = "./results/VO_LO.txt"; % Visual Odometry
 %% Read LiDAR Odometry and INS Data
 data_1 = load(filename_1, '-ascii');
 data_2 = load(filename_2, '-ascii');
@@ -58,6 +60,7 @@ ylabel('Y / m')
 zlabel('Z / m')
 title('Before Calibration')
 legend('LiDAR Odometry', 'Visual Odometry')
+view(3)
 %% Optimization
 fun = @(x)costFunction_L2C_quat_interp(pose_1_interp, pose_2_interp, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
@@ -97,7 +100,7 @@ for i = 1 : m
     pose_1_temp = quat2tform(pose_1_interp(i, 4 : 7));
     pose_1_temp(1 : 3, 4) = pose_1_interp(i, 1 : 3)';
     pose_L2C_temp = T12 \ pose_1_temp * T12; % Correct
-%     pose_L2I_temp = pose_1_temp * T12; % Wrong !!!
+%     pose_L2C_temp = pose_1_temp * T12; % Wrong !!!
     pose_L2C(i, :) = [pose_L2C_temp(1 : 3, 4)', tform2quat(pose_L2C_temp)];
 end
 pose_2_interp(:, 1 : 3) = pose_2_interp(:, 1 : 3) * scale;
@@ -114,3 +117,7 @@ ylabel('Y / m')
 zlabel('Z / m')
 title('After Calibration')
 legend('LiDAR Pose Original', 'LiDAR Pose Transformed', 'Camera Pose with Scale')
+view(3)
+%% Export Poses for Evaluation
+writematrix([timestamp_1_interp, pose_L2C], filename_1_out, 'Delimiter', ' ')
+writematrix([timestamp_2_interp, pose_2_interp], filename_2_out, 'Delimiter', ' ')

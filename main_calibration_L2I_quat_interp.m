@@ -18,8 +18,12 @@ format long
 %% Pose Filename Setup
 % filename_1 = "./data/LO.mat"; % LiDAR Odometry
 % filename_2 = "./data/INS.mat"; % INS
+% filename_1_out = "./results/LO2INS.txt"; % LiDAR Odometry
+% filename_2_out = "./results/INS_LO.txt"; % INS
 filename_1 = "./data/LO_3.mat"; % LiDAR Odometry
 filename_2 = "./data/INS_3.mat"; % INS
+filename_1_out = "./results/LO2INS_3.txt"; % LiDAR Odometry
+filename_2_out = "./results/INS_LO_3.txt"; % INS
 %% Read LiDAR Odometry and INS Data
 data_1 = load(filename_1, '-ascii');
 data_2 = load(filename_2, '-ascii');
@@ -60,6 +64,7 @@ ylabel('Y / m')
 zlabel('Z / m')
 title('Before Calibration')
 legend('LiDAR Odometry', 'INS')
+view(3)
 %% Optimization
 fun = @(x)costFunction_L2I_quat_interp(pose_1_interp, pose_2_interp, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
@@ -114,3 +119,7 @@ ylabel('Y / m')
 zlabel('Z / m')
 title('After Calibration')
 legend('LiDAR Pose Original', 'LiDAR Pose Transformed', 'INS')
+view(3)
+%% Export Poses for Evaluation
+writematrix([timestamp_1_interp, pose_L2I], filename_1_out, 'Delimiter', ' ')
+writematrix([timestamp_2_interp, pose_2_interp], filename_2_out, 'Delimiter', ' ')
