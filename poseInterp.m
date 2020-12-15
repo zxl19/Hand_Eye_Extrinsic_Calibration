@@ -1,4 +1,8 @@
 function [pose_1_interp, timestamp_1_interp, pose_2_interp, timestamp_2_interp] = poseInterp(pose_1, timestamp_1, pose_2, timestamp_2)
+timestamp_1_interp = [];
+timestamp_2_interp = [];
+pose_1_interp = [];
+pose_2_interp = [];
 [n1, ~] = size(pose_1);
 [n2, ~] = size(pose_2);
 ind = 1;
