@@ -23,7 +23,7 @@ Set your filenames and run `pose2mat.m` to get `.mat` files.
 
 ## 2. Pose Estimation
 
-### 2.1 LiDAR Pose Estimation
+### 2.1 LiDAR-INS Calibration
 
 1. Record pose estimates of a SLAM algorithm (e.g. [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM)) and INS pose output.
 
@@ -36,7 +36,7 @@ Set your filenames and run `pose2mat.m` to get `.mat` files.
     - `readLO`: Convert LiDAR odometry file to `.mat` format.
     - `readNovatel`: Convert Novatel pose file to `.mat` format.
 
-### 2.2 Camera Pose Estimation
+### 2.2 Camera-INS Calibration
 
 1. We use [COLMAP](https://github.com/colmap/colmap) to estimate and export camera pose. The `.txt` pose output should be in the following format:
 
@@ -51,6 +51,12 @@ Set your filenames and run `pose2mat.m` to get `.mat` files.
     - `readVO`: Convert visual odometry file to `.mat` format.
     - `readNovatel`: Convert Novatel pose file to `.mat` format.
     - `readIMU`: Convert IMU pose file to `.mat` format.
+
+### 2.3 FCPE Calibration
+
+1. Use the methods above to acquire poses.
+2. Convert `.csv` files to `.mat` files.
+    - `readPose_FCPE`: Convert LiDAR, camera and INS pose files to `.mat` format.
 
 ## 3. Interface Expansion
 
