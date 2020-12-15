@@ -3,8 +3,8 @@ loss = 0;
 x_13 = x(1, 1 : 7); % LiDAR to INS
 x_23 = x(1, 8 : 15); % Camera to INS
 x_12 = x(1, 16 : 23); % LiDAR to Camera
-% mu = [1, 1, 1, 1, 1]; % weight
-mu = [1, 1, 10, 10, 10]; % weight
+mu = [1, 1, 1, 1, 1]; % Weight
+% mu = [1, 1, 10, 10, 10]; % Worse
 %% LiDAR to INS
 quat_13 = x_13(1, 4 : 7);
 quat_13 = quat_13 / sqrt(sum(quat_13.^2));
