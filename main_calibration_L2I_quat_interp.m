@@ -16,20 +16,21 @@ format long
 % y (front)
 % z (up)
 %% Pose Filename Setup
-% filename_1 = "./data/LO.mat"; % LiDAR Odometry
-% filename_2 = "./data/INS.mat"; % INS
-% filename_1_out = "./results/LO2INS.txt"; % LiDAR Odometry
-% filename_2_out = "./results/INS_LO.txt"; % INS
-filename_1 = "./data/LO_3.mat"; % LiDAR Odometry
-filename_2 = "./data/INS_3.mat"; % INS
-filename_1_out = "./results/LO2INS_3.txt"; % LiDAR Odometry
-filename_2_out = "./results/INS_LO_3.txt"; % INS
+filename_1 = "./data/LO.mat"; % LiDAR Odometry
+filename_2 = "./data/INS.mat"; % INS
+filename_1_out = "./results/LO2INS.txt"; % LiDAR Odometry
+filename_2_out = "./results/INS_LO.txt"; % INS
+% filename_1 = "./data/LO_3.mat"; % LiDAR Odometry
+% filename_2 = "./data/INS_3.mat"; % INS
+% filename_1_out = "./results/LO2INS_3.txt"; % LiDAR Odometry
+% filename_2_out = "./results/INS_LO_3.txt"; % INS
 %% Read LiDAR Odometry and INS Data
+interval = 5;
 data_1 = load(filename_1, '-ascii');
 data_2 = load(filename_2, '-ascii');
-timestamp_1 = data_1(:, 1);
+timestamp_1 = data_1(1 : interval : end, 1);
 timestamp_2 = data_2(:, 1);
-pose_1 = data_1(:, 2 : 8);
+pose_1 = data_1(1 : interval : end, 2 : 8);
 pose_2 = data_2(:, 2 : 8);
 %% Coordinate Transformation
 R0_1 = quat2rotm(pose_1(1, 4 : 7)); % qw qx qy qz

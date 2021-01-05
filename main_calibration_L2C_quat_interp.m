@@ -20,12 +20,13 @@ filename_1 = "./data/LO_FCPE.mat"; % LiDAR Odometry
 filename_2 = "./data/VO_FCPE.mat"; % Visual Odometry
 filename_1_out = "./results/LO2VO.txt"; % LiDAR Odometry
 filename_2_out = "./results/VO_LO.txt"; % Visual Odometry
-%% Read LiDAR Odometry and INS Data
+%% Read LiDAR Odometry and Visual Odometry Data
+interval = 3;
 data_1 = load(filename_1, '-ascii');
 data_2 = load(filename_2, '-ascii');
-timestamp_1 = data_1(:, 1);
+timestamp_1 = data_1(1 : interval : end, 1);
 timestamp_2 = data_2(:, 1);
-pose_1 = data_1(:, 2 : 8);
+pose_1 = data_1(1 : interval : end, 2 : 8);
 pose_2 = data_2(:, 2 : 8);
 %% Coordinate Transformation
 R0_1 = quat2rotm(pose_1(1, 4 : 7)); % qw qx qy qz

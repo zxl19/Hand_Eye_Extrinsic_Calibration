@@ -25,7 +25,10 @@ filename_2_out_23 = "./results/VO2INS_FCPE.txt"; % Visual Odometry
 filename_3_out_23 = "./results/INS_VO_FCPE.txt"; % INS for Camera
 filename_1_out_12 = "./results/LO2VO_FCPE.txt"; % LiDAR Odometry
 filename_2_out_12 = "./results/VO_LO_FCPE.txt"; % Visual Odometry
-%% Read LiDAR Odometry and INS Data
+%% Read Pose Data
+interval_13 = 5;
+interval_23 = 5;
+interval_12 = 3;
 data_1 = load(filename_1, '-ascii');
 data_2 = load(filename_2, '-ascii');
 data_3 = load(filename_3, '-ascii');
@@ -67,9 +70,9 @@ for i = 1 : p
     pose_3(i, 4 : 7) = quat; % qw qx qy qz
 end
 %% Pose Interpolation
-[pose_1_interp_13, timestamp_1_interp_13, pose_3_interp_13, timestamp_3_interp_13] = poseInterp(pose_1, timestamp_1, pose_3, timestamp_3);
-[pose_2_interp_23, timestamp_2_interp_23, pose_3_interp_23, timestamp_3_interp_23] = poseInterp(pose_2, timestamp_2, pose_3, timestamp_3);
-[pose_1_interp_12, timestamp_1_interp_12, pose_2_interp_12, timestamp_2_interp_12] = poseInterp(pose_1, timestamp_1, pose_2, timestamp_2);
+[pose_1_interp_13, timestamp_1_interp_13, pose_3_interp_13, timestamp_3_interp_13] = poseInterp(pose_1(1 : interval_13 : end, :), timestamp_1(1 : interval_13 : end, :), pose_3, timestamp_3);
+[pose_2_interp_23, timestamp_2_interp_23, pose_3_interp_23, timestamp_3_interp_23] = poseInterp(pose_2(1 : interval_23 : end, :), timestamp_2(1 : interval_23 : end, :), pose_3, timestamp_3);
+[pose_1_interp_12, timestamp_1_interp_12, pose_2_interp_12, timestamp_2_interp_12] = poseInterp(pose_1(1 : interval_12 : end, :), timestamp_1(1 : interval_12 : end, :), pose_2, timestamp_2);
 %% Plot to Check Data
 figure
 subplot(1, 3, 1)

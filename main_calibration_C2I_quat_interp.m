@@ -22,12 +22,13 @@ filename_3 = "./data/IMU.mat"; % IMU Time
 filename_1_out = "./results/VO2INS.txt"; % Visual Odometry
 filename_2_out = "./results/INS_VO.txt"; % INS
 %% Read LiDAR Odometry and INS Data
+interval = 5;
 data_1 = load(filename_1, '-ascii');
 data_2 = load(filename_2, '-ascii');
 data_3 = load(filename_3, '-ascii');
-timestamp_1 = data_1(:, 1);
+timestamp_1 = data_1(1 : interval : end, 1);
 timestamp_2 = data_3(:, 1);
-pose_1 = data_1(:, 2 : 8);
+pose_1 = data_1(1 : interval : end, 2 : 8);
 pose_2 = data_2(:, 2 : 8);
 %% Coordinate Transformation
 R0_1 = quat2rotm(pose_1(1, 4 : 7)); % qw qx qy qz
@@ -62,11 +63,12 @@ ylabel('Y / m')
 zlabel('Z / m')
 title('Before Calibration')
 legend('Visual Odometry', 'INS')
+view(3)
 %% Optimization
 fun = @(x)costFunction_C2I_quat_interp(pose_1_interp, pose_2_interp, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-% options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-options = optimset('PlotFcns', 'optimplotfval');
+options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
+% options = optimset('PlotFcns', 'optimplotfval');
 % Constrained
 A = [];
 b = [];
@@ -117,6 +119,7 @@ ylabel('Y / m')
 zlabel('Z / m')
 title('After Calibration')
 legend('Camera Pose Original', 'Camera Pose Transformed', 'INS')
+view(3)
 %% Export Poses for Evaluation
 writematrix([timestamp_1_interp, pose_C2I], filename_1_out, 'Delimiter', ' ')
 writematrix([timestamp_2_interp, pose_2_interp], filename_2_out, 'Delimiter', ' ')
