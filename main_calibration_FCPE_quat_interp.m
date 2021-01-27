@@ -157,7 +157,7 @@ fprintf("Camera -> INS Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tYaw\t\t|\tPitch\t|\
 fprintf("Camera -> INS Extrinsic: |\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\t%.4f\t|\n", x_23(1, 1 : 3), quat2eul(x_23(1, 4 : 7), 'ZYX'), scale_23)
 T23 = quat2tform(x_23(1, 4 : 7));
 T23(1 : 3, 4) = x_23(1, 1 : 3)';
-fprintf("T13 = \n")
+fprintf("T23 = \n")
 disp(T23)
 fprintf("---------------------------------------------------------------------\n")
 fprintf("LiDAR -> Camera Extrinsic: |\tX\t\t|\tY\t\t|\tZ\t\t|\tqw\t\t|\tqx\t\t|\tqy\t\t|\tqz\t\t|\tScale\t|\n")

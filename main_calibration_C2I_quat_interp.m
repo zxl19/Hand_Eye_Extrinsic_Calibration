@@ -21,7 +21,7 @@ filename_2 = "./data/INS.mat"; % INS
 filename_3 = "./data/IMU.mat"; % IMU Time
 filename_1_out = "./results/VO2INS.txt"; % Visual Odometry
 filename_2_out = "./results/INS_VO.txt"; % INS
-%% Read LiDAR Odometry and INS Data
+%% Read Visual Odometry and INS Data
 interval = 5;
 data_1 = load(filename_1, '-ascii');
 data_2 = load(filename_2, '-ascii');
