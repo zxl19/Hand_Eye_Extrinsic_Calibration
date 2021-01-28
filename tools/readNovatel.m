@@ -16,15 +16,22 @@ altitude = T{:, 18}; % m
 roll = deg2rad(T{:, 23}); % rad
 pitch = deg2rad(T{:, 24}); % rad
 azimuth = deg2rad(T{:, 25}); % rad
-% yaw = azi2yaw(azimuth); % rad
+yaw = azi2yaw(azimuth); % rad
 %% Convert Data Format
 [x, y, ~] = deg2utm(latitude, longitude); % degree
 z = altitude;
+% Work
 eul = [-azimuth, pitch, roll]; % yaw pitch roll
 quat = eul2quat(eul, 'ZYX'); % qw qx qy qz
-% Not Supported
-% eul = [yaw, roll, pitch]; % yaw roll pitch
-% quat = eul2quat(eul, 'ZXY'); % qw qx qy qz
+% Novatel ZXY
+% Not Working
+% zero = zeros(size(roll));
+% eul_1 = [yaw, zero, zero]; % yaw roll(0) pitch(0)
+% eul_2 = [roll, pitch, zero]; % roll pitch yaw(0)
+% rotm_1 = eul2rotm(eul_1, 'ZYX'); % Z00
+% rotm_2 = eul2rotm(eul_2, 'XYZ'); % XY0
+% rotm = rotm_1 .* rotm_2; % ZXY
+% quat = rotm2quat(rotm); % qw qx qy qz
 pose = [x, y, z, quat]; % x y z qw qx qy qz
 data = [timestamp, pose];
 %% Output Formatted Pose
