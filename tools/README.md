@@ -68,3 +68,4 @@ If you are using a different SLAM algorithm or a different INS device. You may d
 2. [rosbag_to_csv](https://github.com/AtsushiSakai/rosbag_to_csv)
 3. [COLMAP](https://github.com/colmap/colmap)
 4. [MATLAB-GPS-Calculations](https://github.com/alexbuczynsky/MATLAB-GPS-Calculations)
+5. [Novatel Driver](https://github.com/ros-drivers/novatel_span_driver/pull/10)

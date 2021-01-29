@@ -36,6 +36,7 @@ yaw = azi2yaw(azimuth); % rad
 %% Convert Data Format
 [x, y, ~] = deg2utm(latitude, longitude); % degree
 z = altitude;
+% Follow Novatel Driver Convention
 % Work
 eul = [-azimuth, pitch, roll]; % yaw pitch roll
 quat = eul2quat(eul, 'ZYX'); % qw qx qy qz
