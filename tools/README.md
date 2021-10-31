@@ -33,6 +33,7 @@ Set your filenames and run `pose2mat.m` to get `.mat` files.
 
 2. Convert the recorded topics into `.csv` format using `rosbag_to_csv`.
 3. Convert `.csv` files to `.mat` files.
+
     - `readLO`: Convert LiDAR odometry file to `.mat` format.
     - `readNovatel`: Convert Novatel pose file to `.mat` format.
 
@@ -48,6 +49,7 @@ Set your filenames and run `pose2mat.m` to get `.mat` files.
 
 2. Convert INS and IMU topics into `.csv` format using `rosbag_to_csv`. Here we use IMU timestamp as the original INS timestamp.
 3. Convert `.csv` files to `.mat` files.
+
     - `readVO`: Convert visual odometry file to `.mat` format.
     - `readNovatel`: Convert Novatel pose file to `.mat` format.
     - `readIMU`: Convert IMU pose file to `.mat` format.
@@ -56,6 +58,7 @@ Set your filenames and run `pose2mat.m` to get `.mat` files.
 
 1. Use the methods above to acquire poses.
 2. Convert `.csv` files to `.mat` files.
+
     - `readPose_FCPE`: Convert LiDAR, camera and INS pose files to `.mat` format.
 
 ## 3. Interface Expansion
