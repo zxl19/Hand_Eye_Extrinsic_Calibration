@@ -6,7 +6,7 @@ MATLAB code for LiDAR-Camera-INS extrinsic calibration based on hand-eye calibra
 
 ## 1. Prerequisites
 
-1. Ubuntu (tested on 16.04) and ROS (tested on Kinetic).
+1. Ubuntu (tested on 16.04 and 18.04) and ROS (tested on Kinetic and Melodic).
 2. [My fork](https://github.com/zxl19/rosbag_to_csv) of [rosbag_to_csv](https://github.com/AtsushiSakai/rosbag_to_csv).
 3. MATLAB (tested on 2020a, with Robotics System Toolbox installed).
 
