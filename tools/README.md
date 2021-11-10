@@ -31,10 +31,10 @@ Set your filenames and run `pose2mat.m` to get `.mat` files.
 
 ### 2.1 LiDAR-INS Calibration
 
-1. Record pose estimates of a SLAM algorithm (e.g. [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM)) and INS pose output. Record mapping result for future processing (Optional).
+1. Record pose estimates of a SLAM algorithm (e.g. [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM)) and INS pose output.
 
     ```shell
-    rosbag record -O calib /aft_mapped_to_init /novatel_data/inspvax /laser_cloud_surround
+    rosbag record -O calib /aft_mapped_to_init /novatel_data/inspvax /imu/data
     ```
 
 2. Convert the recorded topics into `.csv` format using my fork of [rosbag_to_csv](https://github.com/zxl19/rosbag_to_csv).
