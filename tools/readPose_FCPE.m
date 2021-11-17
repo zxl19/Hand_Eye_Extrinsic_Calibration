@@ -10,6 +10,13 @@ input_filename_IMU = "../raw_data/8zi_biaoding-imu-data.csv";
 output_filename_LO = "../data/LO_FCPE.mat";
 output_filename_VO = "../data/VO_FCPE.mat";
 output_filename_INS = "../data/INS_FCPE.mat";
+% input_filename_LO = "../raw_data/2021-11-10/bag1/bag1-aft_mapped_to_init.csv";
+% input_filename_VO = "../raw_data/2021-11-10/bag1/bag1-images.txt";
+% input_filename_INS = "../raw_data/2021-11-10/bag1/bag1-novatel_data-inspvax.csv";
+% input_filename_IMU = "../raw_data/2021-11-10/bag7/bag1-imu-data.csv";
+% output_filename_LO = "../data/2021-11-10/bag1/LO_FCPE.mat";
+% output_filename_VO = "../data/2021-11-10/bag1/VO_FCPE.mat";
+% output_filename_INS = "../data/2021-11-10/bag1/INS_FCPE.mat";
 %% Read LO Data
 T_LO = readtable(input_filename_LO);
 timestamp_LO = T_LO{:, 3} + T_LO{:, 4} * 1e-9; % s
@@ -51,6 +58,10 @@ quat = eul2quat(eul, 'ZYX'); % qw qx qy qz
 % quat = rotm2quat(rotm); % qw qx qy qz
 pose_INS = [x, y, z, quat]; % x y z qw qx qy qz
 data_INS = [timestamp_INS, pose_INS];
+%% Sort Data Accoring to Timestamp
+data_LO = sortrows(data_LO);
+data_VO = sortrows(data_VO);
+data_INS = sortrows(data_INS);
 %% Output Formatted Pose
 % writematrix([timestamp, pose], output_filename, 'Delimiter', ' '); % Do not use, causes numerical error!
 save(output_filename_LO, 'data_LO', '-ascii', '-double');

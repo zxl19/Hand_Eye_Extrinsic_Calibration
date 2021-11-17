@@ -12,6 +12,8 @@ T = readtable(input_filename);
 timestamp = T{:, 1} * 1e-9; % s
 pose = T{:, [7 : 9, 13, 10 : 12]}; % x y z qw qx qy qz
 data = [timestamp, pose];
+%% Sort Data Accoring to Timestamp
+data = sortrows(data);
 %% Output Formatted Pose
 % writematrix([timestamp, pose], output_filename, 'Delimiter', ' '); % Do not use, causes numerical error!
 save(output_filename, 'data', '-ascii', '-double');

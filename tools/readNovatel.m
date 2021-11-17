@@ -35,6 +35,8 @@ quat = eul2quat(eul, 'ZYX'); % qw qx qy qz
 % quat = rotm2quat(rotm); % qw qx qy qz
 pose = [x, y, z, quat]; % x y z qw qx qy qz
 data = [timestamp, pose];
+%% Sort Data Accoring to Timestamp
+data = sortrows(data);
 %% Output Formatted Pose
 % writematrix([timestamp, pose], output_filename, 'Delimiter', ' '); % Do not use, causes numerical error!
 save(output_filename, 'data', '-ascii', '-double');
