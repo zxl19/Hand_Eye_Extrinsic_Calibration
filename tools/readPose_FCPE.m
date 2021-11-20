@@ -3,20 +3,20 @@ clear
 clc
 format long
 %% Filename Setup
-input_filename_LO = "../raw_data/calib_2020-11-15-11-54-47-aft_mapped_to_init.csv";
-input_filename_VO = "../raw_data/pose6.txt";
-input_filename_INS = "../raw_data/calib_2020-11-15-11-54-47-novatel_data-inspvax.csv";
-input_filename_IMU = "../raw_data/8zi_biaoding-imu-data.csv";
-output_filename_LO = "../data/LO_FCPE.mat";
-output_filename_VO = "../data/VO_FCPE.mat";
-output_filename_INS = "../data/INS_FCPE.mat";
-% input_filename_LO = "../raw_data/2021-11-10/bag1/bag1-aft_mapped_to_init.csv";
-% input_filename_VO = "../raw_data/2021-11-10/bag1/bag1-images.txt";
-% input_filename_INS = "../raw_data/2021-11-10/bag1/bag1-novatel_data-inspvax.csv";
-% input_filename_IMU = "../raw_data/2021-11-10/bag7/bag1-imu-data.csv";
-% output_filename_LO = "../data/2021-11-10/bag1/LO_FCPE.mat";
-% output_filename_VO = "../data/2021-11-10/bag1/VO_FCPE.mat";
-% output_filename_INS = "../data/2021-11-10/bag1/INS_FCPE.mat";
+% input_filename_LO = "../raw_data/calib_2020-11-15-11-54-47-aft_mapped_to_init.csv";
+% input_filename_VO = "../raw_data/pose6.txt";
+% input_filename_INS = "../raw_data/calib_2020-11-15-11-54-47-novatel_data-inspvax.csv";
+% input_filename_IMU = "../raw_data/8zi_biaoding-imu-data.csv";
+% output_filename_LO = "../data/LO_FCPE.mat";
+% output_filename_VO = "../data/VO_FCPE.mat";
+% output_filename_INS = "../data/INS_FCPE.mat";
+input_filename_LO = "../raw_data/2021-11-10/bag1/bag1-aft_mapped_to_init.csv";
+input_filename_VO = "../raw_data/2021-11-10/bag1/bag1-images.txt";
+input_filename_INS = "../raw_data/2021-11-10/bag1/bag1-novatel_data-inspvax.csv";
+input_filename_IMU = "../raw_data/2021-11-10/bag1/bag1-imu-data.csv";
+output_filename_LO = "../data/2021-11-10/bag1/LO_FCPE.mat";
+output_filename_VO = "../data/2021-11-10/bag1/VO_FCPE.mat";
+output_filename_INS = "../data/2021-11-10/bag1/INS_FCPE.mat";
 %% Read LO Data
 T_LO = readtable(input_filename_LO);
 timestamp_LO = T_LO{:, 3} + T_LO{:, 4} * 1e-9; % s
