@@ -65,8 +65,8 @@ legend('Visual Odometry', 'INS')
 %% Optimization
 fun = @(x)costFunction_C2I_quat(pose_1_sync, pose_2_sync, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-% options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-options = optimset('PlotFcns', 'optimplotfval');
+options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6); % OK
+% options = optimset('PlotFcns', 'optimplotfval'); % OK
 % Constrained
 A = [];
 b = [];

@@ -65,8 +65,8 @@ legend('Visual Odometry', 'INS')
 %% Optimization
 fun = @(x)costFunction_C2I_12(pose_1_sync, pose_2_sync, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-% options = optimset('PlotFcns', 'optimplotfval');
+options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6); % Converges, but too slow!
+% options = optimset('PlotFcns', 'optimplotfval'); % Optimization did not converge!
 % Constrained
 A = [];
 b = [];
