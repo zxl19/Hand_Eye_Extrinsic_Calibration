@@ -16,14 +16,11 @@ format long
 % y (front)
 % z (up)
 %% Pose Filename Setup
-filename_1 = "./data/LO.mat"; % LiDAR Odometry
-filename_2 = "./data/INS.mat"; % INS
-filename_1_out = "./results/LO2INS.txt"; % LiDAR Odometry
-filename_2_out = "./results/INS_LO.txt"; % INS
-% filename_1 = "./data/LO_3.mat"; % LiDAR Odometry
-% filename_2 = "./data/INS_3.mat"; % INS
-% filename_1_out = "./results/LO2INS_3.txt"; % LiDAR Odometry
-% filename_2_out = "./results/INS_LO_3.txt"; % INS
+filename_1 = "./data/2021-11-10/bag1/LO_FCPE.mat"; % LiDAR Odometry
+filename_2 = "./data/2021-11-10/bag1/INS_FCPE.mat"; % INS
+filename_1_out = "./results/2021-11-10/bag1/LO2INS.txt"; % LiDAR Odometry
+filename_2_out = "./results/2021-11-10/bag1/INS_LO.txt"; % INS
+filename_x_LI = "./results/2021-11-10/bag1/x_LI.mat"; % LiDAR to INS Extrinsic
 %% Read LiDAR Odometry and INS Data
 interval = 5;
 data_1 = load(filename_1, '-ascii');
@@ -69,8 +66,8 @@ view(3)
 %% Optimization
 fun = @(x)costFunction_L2I_quat_interp(pose_1_interp, pose_2_interp, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-% options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-options = optimset('PlotFcns', 'optimplotfval');
+options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6); % OK
+% options = optimset('PlotFcns', 'optimplotfval'); % OK
 % Constrained
 A = [];
 b = [];
@@ -84,6 +81,8 @@ x0(1, 4 : 7) = [1, 0, 0, 0]; % qw qx qy qz
 [x, fval, exitflag, output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub, [], options); % Constrained
 % x(1, 4 : 7) = normalize(x(1, 4 : 7)); % Do Not Use!!!
 x(1, 4 : 7) = x(1, 4 : 7) / sqrt(sum(x(1, 4 : 7).^2));
+%% Save Extrinsic
+save(filename_x_LI, 'x', '-ascii', '-double');
 %% Transform
 % R12 = quat2rotm(x(1, 4 : 7));
 % t12 = x(1, 1 : 3)';

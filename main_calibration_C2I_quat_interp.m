@@ -16,18 +16,17 @@ format long
 % y (front)
 % z (up)
 %% Pose Filename Setup
-filename_1 = "./data/VO.mat"; % Visual Odometry
-filename_2 = "./data/INS.mat"; % INS
-filename_3 = "./data/IMU.mat"; % IMU Time
-filename_1_out = "./results/VO2INS.txt"; % Visual Odometry
-filename_2_out = "./results/INS_VO.txt"; % INS
+filename_1 = "./data/2021-11-10/bag1/VO_FCPE.mat"; % Visual Odometry
+filename_2 = "./data/2021-11-10/bag1/INS_FCPE.mat"; % INS
+filename_1_out = "./results/2021-11-10/bag1/VO2INS.txt"; % Visual Odometry
+filename_2_out = "./results/2021-11-10/bag1/INS_VO.txt"; % INS for Camera
+filename_x_CI = "./results/2021-11-10/bag1/x_CI.mat"; % Camera to INS Extrinsic
 %% Read Visual Odometry and INS Data
 interval = 5;
 data_1 = load(filename_1, '-ascii');
 data_2 = load(filename_2, '-ascii');
-data_3 = load(filename_3, '-ascii');
 timestamp_1 = data_1(1 : interval : end, 1);
-timestamp_2 = data_3(:, 1);
+timestamp_2 = data_2(:, 1);
 pose_1 = data_1(1 : interval : end, 2 : 8);
 pose_2 = data_2(:, 2 : 8);
 %% Coordinate Transformation
@@ -67,8 +66,8 @@ view(3)
 %% Optimization
 fun = @(x)costFunction_C2I_quat_interp(pose_1_interp, pose_2_interp, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-% options = optimset('PlotFcns', 'optimplotfval');
+options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6); % OK
+% options = optimset('PlotFcns', 'optimplotfval'); % OK
 % Constrained
 A = [];
 b = [];
@@ -82,6 +81,8 @@ x0(1, 4 : 7) = [1, 0, 0, 0]; % qw qx qy qz
 [x,fval,exitflag,output] = fmincon(fun, x0, A, b, Aeq, beq, lb, ub, [], options); % Constrained
 % x(1, 4 : 7) = normalize(x(1, 4 : 7)); % Do Not Use!!!
 x(1, 4 : 7) = x(1, 4 : 7) / sqrt(sum(x(1, 4 : 7).^2));
+%% Save Extrinsic
+save(filename_x_CI, 'x', '-ascii', '-double');
 %% Transform
 % R12 = quat2rotm(x(1, 4 : 7));
 % t12 = x(1, 1 : 3);

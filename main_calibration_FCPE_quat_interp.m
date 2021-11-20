@@ -16,19 +16,31 @@ format long
 % y (front)
 % z (up)
 %% Pose Filename Setup
-filename_1 = "./data/LO_FCPE.mat"; % LiDAR Odometry
-filename_2 = "./data/VO_FCPE.mat"; % Visual Odometry
-filename_3 = "./data/INS_FCPE.mat"; % INS
-filename_1_out_13 = "./results/LO2INS_FCPE.txt"; % LiDAR Odometry
-filename_3_out_13 = "./results/INS_LO_FCPE.txt"; % INS for LiDAR
-filename_2_out_23 = "./results/VO2INS_FCPE.txt"; % Visual Odometry
-filename_3_out_23 = "./results/INS_VO_FCPE.txt"; % INS for Camera
-filename_1_out_12 = "./results/LO2VO_FCPE.txt"; % LiDAR Odometry
-filename_2_out_12 = "./results/VO_LO_FCPE.txt"; % Visual Odometry
+% filename_1 = "./data/LO_FCPE.mat"; % LiDAR Odometry
+% filename_2 = "./data/VO_FCPE.mat"; % Visual Odometry
+% filename_3 = "./data/INS_FCPE.mat"; % INS
+% filename_1_out_13 = "./results/LO2INS_FCPE.txt"; % LiDAR Odometry
+% filename_3_out_13 = "./results/INS_LO_FCPE.txt"; % INS for LiDAR
+% filename_2_out_23 = "./results/VO2INS_FCPE.txt"; % Visual Odometry
+% filename_3_out_23 = "./results/INS_VO_FCPE.txt"; % INS for Camera
+% filename_1_out_12 = "./results/LO2VO_FCPE.txt"; % LiDAR Odometry
+% filename_2_out_12 = "./results/VO_LO_FCPE.txt"; % Visual Odometry for LiDAR
+filename_1 = "./data/2021-11-10/bag1/LO_FCPE.mat"; % LiDAR Odometry
+filename_2 = "./data/2021-11-10/bag1/VO_FCPE.mat"; % Visual Odometry
+filename_3 = "./data/2021-11-10/bag1/INS_FCPE.mat"; % INS
+filename_1_out_13 = "./results/2021-11-10/bag1/LO2INS_FCPE.txt"; % LiDAR Odometry
+filename_3_out_13 = "./results/2021-11-10/bag1/INS_LO_FCPE.txt"; % INS for LiDAR
+filename_2_out_23 = "./results/2021-11-10/bag1/VO2INS_FCPE.txt"; % Visual Odometry
+filename_3_out_23 = "./results/2021-11-10/bag1/INS_VO_FCPE.txt"; % INS for Camera
+filename_1_out_12 = "./results/2021-11-10/bag1/LO2VO_FCPE.txt"; % LiDAR Odometry
+filename_2_out_12 = "./results/2021-11-10/bag1/VO_LO_FCPE.txt"; % Visual Odometry for LiDAR
+filename_x_13 = "./results/2021-11-10/bag1/x_LI_FCPE.mat"; % LiDAR to INS Extrinsic
+filename_x_23 = "./results/2021-11-10/bag1/x_CI_FCPE.mat"; % Camera to INS Extrinsic
+filename_x_12 = "./results/2021-11-10/bag1/x_LC_FCPE.mat"; % LiDAR to Camera Extrinsic
 %% Read Pose Data
 interval_13 = 5;
 interval_23 = 5;
-interval_12 = 3;
+interval_12 = 5;
 data_1 = load(filename_1, '-ascii');
 data_2 = load(filename_2, '-ascii');
 data_3 = load(filename_3, '-ascii');
@@ -114,7 +126,8 @@ view(3)
 %% Optimization
 fun = @(x)costFunction_FCPE_quat_interp(pose_1_interp_13, pose_3_interp_13, pose_2_interp_23, pose_3_interp_23, pose_1_interp_12, pose_2_interp_12, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
+options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6); % OK
+% options = optimset('PlotFcns', 'optimplotfval'); % OK
 % Constrained
 A = [];
 b = [];
@@ -168,6 +181,10 @@ T12 = quat2tform(x_12(1, 4 : 7));
 T12(1 : 3, 4) = x_12(1, 1 : 3)';
 fprintf("T12 = \n")
 disp(T12)
+%% Save Extrinsic
+save(filename_x_13, 'x_13', '-ascii', '-double');
+save(filename_x_23, 'x_23', '-ascii', '-double');
+save(filename_x_12, 'x_12', '-ascii', '-double');
 %% Transform
 % LiDAR to INS
 [m, ~] = size(pose_1_interp_13);
