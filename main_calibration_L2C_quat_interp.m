@@ -16,11 +16,11 @@ format long
 % y (front)
 % z (up)
 %% Pose Filename Setup
-filename_1 = "./data/2021-11-10/bag2/LO_FCPE.mat"; % LiDAR Odometry
-filename_2 = "./data/2021-11-10/bag2/VO_FCPE.mat"; % Visual Odometry
-filename_1_out = "./results/2021-11-10/bag2/LO2VO.txt"; % LiDAR Odometry
-filename_2_out = "./results/2021-11-10/bag2/VO_LO.txt"; % Visual Odometry
-filename_x_LC = "./results/2021-11-10/bag2/x_LC.mat"; % LiDAR to Camera Extrinsic
+filename_1 = "./data/2021-11-10/bag1/LO_FCPE.mat"; % LiDAR Odometry
+filename_2 = "./data/2021-11-10/bag1/VO_FCPE.mat"; % Visual Odometry
+filename_1_out = "./results/2021-11-10/bag1/LO2VO.txt"; % LiDAR Odometry
+filename_2_out = "./results/2021-11-10/bag1/VO_LO.txt"; % Visual Odometry
+filename_x_LC = "./results/2021-11-10/bag1/x_LC.mat"; % LiDAR to Camera Extrinsic
 %% Read LiDAR Odometry and Visual Odometry Data
 interval = 5;
 data_1 = load(filename_1, '-ascii');
@@ -67,7 +67,7 @@ view(3)
 fun = @(x)costFunction_L2C_quat_interp(pose_1_interp, pose_2_interp, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
 % options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6); % Did Not Converge
-options = optimset('PlotFcns', 'optimplotfval'); % OK
+options = optimset('PlotFcns', 'optimplotfval'); % Solver Stopped Prematurely
 % Constrained
 A = [];
 b = [];

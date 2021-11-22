@@ -34,9 +34,9 @@ filename_2_out_23 = "./results/2021-11-10/bag1/VO2INS_FCPE_update.txt"; % Update
 filename_3_out_23 = "./results/2021-11-10/bag1/INS_VO_FCPE_update.txt"; % Updated INS for Camera
 filename_1_out_12 = "./results/2021-11-10/bag1/LO2VO_FCPE_update.txt"; % Updated LiDAR Odometry
 filename_2_out_12 = "./results/2021-11-10/bag1/VO_LO_FCPE_update.txt"; % Updated Visual Odometry for LiDAR
-filename_x_13 = "./results/2021-11-10/bag1/x_LI_update.mat"; % Updated LiDAR to INS Extrinsic
-filename_x_23 = "./results/2021-11-10/bag1/x_CI_update.mat"; % Updated Camera to INS Extrinsic
-filename_x_12 = "./results/2021-11-10/bag1/x_LC_update.mat"; % Updated LiDAR to Camera Extrinsic
+filename_x_13 = "./results/2021-11-10/bag1/x_LI_FCPE_update.mat"; % Updated LiDAR to INS Extrinsic
+filename_x_23 = "./results/2021-11-10/bag1/x_CI_FCPE_update.mat"; % Updated Camera to INS Extrinsic
+filename_x_12 = "./results/2021-11-10/bag1/x_LC_FCPE_update.mat"; % Updated LiDAR to Camera Extrinsic
 %% Fix LiDAR to Camera Extrinsic (Translation Only)
 t_12 = [-0.5, 0.06, 0.0]; % x y z
 %% Read Pose Data
@@ -153,7 +153,7 @@ x(1, 16 : 19) = x(1, 16 : 19) / sqrt(sum(x(1, 16 : 19).^2));
 %% Print Results
 x_13 = x(1, 1 : 7);
 x_23 = x(1, 8 : 15);
-x_12 = [t_12, x(1, 16 : 19)];
+x_12 = [t_12, x(1, 16 : 20)];
 scale_23 = x(1, 15);
 scale_12 = x(1, 20);
 fprintf("------------------------------ Results ------------------------------\n")

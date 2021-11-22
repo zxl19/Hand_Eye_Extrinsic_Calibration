@@ -34,9 +34,9 @@ filename_2_out_23 = "./results/2021-11-10/bag1/VO2INS_FCPE_update.txt"; % Update
 filename_3_out_23 = "./results/2021-11-10/bag1/INS_VO_FCPE_update.txt"; % Updated INS for Camera
 filename_1_out_12 = "./results/2021-11-10/bag1/LO2VO_FCPE_update.txt"; % Updated LiDAR Odometry
 filename_2_out_12 = "./results/2021-11-10/bag1/VO_LO_FCPE_update.txt"; % Updated Visual Odometry for LiDAR
-filename_x_13 = "./results/2021-11-10/bag1/x_LI_update.mat"; % Updated LiDAR to INS Extrinsic
-filename_x_23 = "./results/2021-11-10/bag1/x_CI_update.mat"; % Updated Camera to INS Extrinsic
-filename_x_12 = "./results/2021-11-10/bag1/x_LC_update.mat"; % Updated LiDAR to Camera Extrinsic
+filename_x_13 = "./results/2021-11-10/bag1/x_LI_FCPE_update.mat"; % Updated LiDAR to INS Extrinsic
+filename_x_23 = "./results/2021-11-10/bag1/x_CI_FCPE_update.mat"; % Updated Camera to INS Extrinsic
+filename_x_12 = "./results/2021-11-10/bag1/x_LC_FCPE_update.mat"; % Updated LiDAR to Camera Extrinsic
 %% Fix LiDAR to Camera Extrinsic
 x_12 = [-0.5, 0.06, 0, 0.5039, -0.5082, -0.4873, 0.5002]; % x y z qw qx qy qz
 %% Read Pose Data

@@ -11,53 +11,38 @@ cy = 551.7450;
 %%% LiDAR to Camera Extrinsic
 %%%% Hand Measured Extrinsic
 % eul = [pi / 2, 0, -pi / 2]; % ZYX
-% t_LC = [-0.5, 0.06, 0.0]; % x y z Hand Measured
+t_LC = [-0.5, 0.06, 0.0]; % x y z Hand Measured
 % q_LC = eul2quat(eul, 'ZYX');
 %%%% bag1
-t_LC = [-0.3787, -0.0691, -0.2201]; % x y z
-q_LC = [0.5039, -0.5082, -0.4873, 0.5002]; % qw qx qy qz
-% q_LC = [0.5043, -0.5088, -0.4867, 0.4999]; % qw qx qy qz
-%%%% bag2
-% t_LC = [-0.4022, -0.0144, -0.1999]; % x y z
-% q_LC = [0.5035, -0.5108, -0.4848, 0.5005]; % qw qx qy qz
+%%%%% Hand-Eye Calibration
+% t_LC = [-0.4450, -0.0657, -0.0541]; % x y z
+% q_LC = [-0.5031, 0.5092, 0.4867, -0.5008]; % qw qx qy qz
+%%%%% FCPE
+% t_LC = [-0.3787, -0.0691, -0.2201]; % x y z
+% q_LC = [0.5039, -0.5082, -0.4873, 0.5002]; % qw qx qy qz
+%%%%% FCPE update
+q_LC = [0.5043, -0.5088, -0.4867, 0.4999]; % qw qx qy qz
+%%%%
 R_LC = quat2rotm(q_LC);
 %%% LiDAR Point Cloud and Image Filename
 filename_pcd = "./raw_data/2021-11-10/static1/static1.pcd";
 filename_img = "./raw_data/2021-11-10/static1/static1.jpg";
-filename_out = "./results/2021-11-10/static1/static1_projected.png";
+filename_out = "./results/2021-11-10/bag1/static1_projected.png";
 % filename_pcd = "./raw_data/2021-11-10/static2/static2.pcd";
 % filename_img = "./raw_data/2021-11-10/static2/static2.jpg";
-% filename_out = "./results/2021-11-10/static2/static2_projected.png";
-% filename_pcd = "./raw_data/2021-11-10/static3/static3.pcd";
-% filename_img = "./raw_data/2021-11-10/static3/static3.jpg";
-% filename_out = "./results/2021-11-10/static3/static3_projected.png";
-% filename_pcd = "./raw_data/2021-11-10/static4/static4.pcd";
-% filename_img = "./raw_data/2021-11-10/static4/static4.jpg";
-% filename_out = "./results/2021-11-10/static4/static4_projected.png";
+% filename_out = "./results/2021-11-10/bag1/static2_projected.png";
+% Static 3 is the same as Static 1, therefore is removed.
+% Static 4 has dynamic objects, therefore is removed.
 % filename_pcd = "./raw_data/2021-11-10/static5/static5.pcd";
 % filename_img = "./raw_data/2021-11-10/static5/static5.jpg";
-% filename_out = "./results/2021-11-10/static5/static5_projected.png";
+% filename_out = "./results/2021-11-10/bag1/static5_projected.png";
 % filename_pcd = "./raw_data/2021-11-10/static6/static6.pcd";
 % filename_img = "./raw_data/2021-11-10/static6/static6.jpg";
-% filename_out = "./results/2021-11-10/static6/static6_projected.png";
-% filename_pcd = "./raw_data/2021-11-19/garage1/garage1.pcd";
-% filename_img = "./raw_data/2021-11-19/garage1/garage1.jpg";
-% filename_out = "./results/2021-11-19/garage1/garage1_projected.png";
-% filename_pcd = "./raw_data/2021-11-19/garage2/garage2.pcd";
-% filename_img = "./raw_data/2021-11-19/garage2/garage2.jpg";
-% filename_out = "./results/2021-11-19/garage2/garage2_projected.png";
-% filename_pcd = "./raw_data/2021-11-19/garage3/garage3.pcd";
-% filename_img = "./raw_data/2021-11-19/garage3/garage3.jpg";
-% filename_out = "./results/2021-11-19/garage3/garage3_projected.png";
-% filename_pcd = "./raw_data/2021-11-19/garage4/garage4.pcd";
-% filename_img = "./raw_data/2021-11-19/garage4/garage4.jpg";
-% filename_out = "./results/2021-11-19/garage4/garage4_projected.png";
-% filename_pcd = "./raw_data/2021-11-19/garage5/garage5.pcd";
-% filename_img = "./raw_data/2021-11-19/garage5/garage5.jpg";
-% filename_out = "./results/2021-11-19/garage5/garage5_projected.png";
+% filename_out = "./results/2021-11-10/bag1/static6_projected.png";
+% Garage 1 to 5 has other objects, therefore is removed.
 % filename_pcd = "./raw_data/2021-11-19/garage6/garage6.pcd";
 % filename_img = "./raw_data/2021-11-19/garage6/garage6.jpg";
-% filename_out = "./results/2021-11-19/garage6/garage6_projected.png";
+% filename_out = "./results/2021-11-10/bag1/garage6_projected.png";
 %% Read and Display LiDAR Point Cloud
 ptCloud = pcread(filename_pcd);
 figure
