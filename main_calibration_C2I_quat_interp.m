@@ -66,8 +66,8 @@ view(3)
 %% Optimization
 fun = @(x)costFunction_C2I_quat_interp(pose_1_interp, pose_2_interp, x);
 % options = optimset( 'Display', 'iter', 'MaxFunEvals', 1e6, 'MaxIter', 1e6);
-options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6); % OK
-% options = optimset('PlotFcns', 'optimplotfval'); % OK
+options = optimset('PlotFcns', 'optimplotfval', 'MaxFunEvals', 1e6, 'MaxIter', 1e6); % OK, sometimes do not converge.
+% options = optimset('PlotFcns', 'optimplotfval'); % OK, sometimes stops prematurely.
 % Constrained
 A = [];
 b = [];

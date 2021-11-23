@@ -67,9 +67,9 @@ scale_LC_FCPE_update = data_LC_FCPE_update(1, 8);
 T_LC_FCPE_update = quat2tform(q_LC_FCPE_update);
 T_LC_FCPE_update(1 : 3, 4) = t_LC_FCPE_update';
 %% Display Results
-consistence_HE = norm(T_LC * T_CI - T_LI, 2);
-consistence_FCPE = norm(T_LC_FCPE * T_CI_FCPE - T_LI_FCPE, 2);
-consistence_update = norm(T_LC_FCPE_update * T_CI_FCPE_update - T_LI_FCPE_update, 2);
-fprintf("Hand-Eye Calibration Consistence:\t\t%.6f\n", consistence_HE)
-fprintf("Round 1 Joint Calibration Consistence:\t%.6f\n", consistence_FCPE)
-fprintf("Round 2 Joint Calibration Consistence:\t%.6f\n", consistence_update)
+consistence_HE = [norm(T_LC * T_CI - T_LI, 2), (scale_LC - scale_CI)];
+consistence_FCPE = [norm(T_LC_FCPE * T_CI_FCPE - T_LI_FCPE, 2), (scale_LC_FCPE - scale_CI_FCPE)];
+consistence_update = [norm(T_LC_FCPE_update * T_CI_FCPE_update - T_LI_FCPE_update, 2), (scale_LC_FCPE_update - scale_CI_FCPE_update)];
+fprintf("Hand-Eye Calibration Consistence:\t\t%.6f\t%.6f\n", consistence_HE)
+fprintf("Round 1 Joint Calibration Consistence:\t%.6f\t%.6f\n", consistence_FCPE)
+fprintf("Round 2 Joint Calibration Consistence:\t%.6f\t%.6f\n", consistence_update)
